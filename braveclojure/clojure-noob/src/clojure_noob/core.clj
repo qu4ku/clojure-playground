@@ -158,3 +158,103 @@
    (x-chop name "karate")))
 (x-chop "kanye West" "slap")
 (x-chop "Kanye East")
+
+
+(defn codger-communication
+  [whippersnapper]
+  (str "Get off my lawn, " whippersnapper "!!!"))
+
+(defn codger
+  [& whippersnappers]
+  (map codger-communication whippersnappers))
+
+(codger "Billy" "Anne-Marie" "The Incredible Bulk")
+
+
+(defn favorite-things
+  [name & things]
+  (str "Hi, " name ", here are my favorite thigns: "
+       (clojure.string/join ", " things)))
+(favorite-things "Jozeph" "gum" "shoes")
+
+; Destructing
+(defn my-first
+  [[first-thing]]
+  first-thing)
+(my-first ["oven" "bike" "war-axe"])
+
+(defn chooser
+  [[first-choice second-choice & unimportant-choices]]
+  (println (str "Your first choice is: " first-choice))
+  (println (str "Your second choice is: " second-choice))
+  (println (str "The rest: "
+                (clojure.string/join ", " unimportant-choices))))
+
+(chooser ["marmelade" "handsom jack" "pigeon" "aquaman"])
+
+
+(defn announce-treasure-location
+  [{lat :lat lng :lng}]
+  (println (str "Treasure lat: " lat))
+  (println (str "treasure lng: " lng)))
+(announce-treasure-location {:lat 28.22 :lng 81.22})
+
+
+(defn steer-ship
+  [& args]
+  (println (clojure.string/join " • " args)))
+(defn announce-treasure-location
+  [{:keys [lat lng] :as treasure-location}]
+  ; (println (str "Treasure lat: " lat))
+  ; (println (str "treasure lng: " lng))
+  (steer-ship treasure-location))
+(announce-treasure-location {:lat 28.22 :lng 81.22})
+
+
+(defn illustrative-function
+  []
+  (+ 1 304)
+  30
+  "joe")
+(illustrative-function)
+
+(defn number-comment
+  [x]
+  (if (> x 6)
+    "Oh my gosh! What a big number!"
+    "That number's OK, I guess"))
+(number-comment 5)
+(number-comment 7)
+
+; anonymous functions
+(fn [param-list]
+  function body)
+
+(map (fn [name] (str "hi, " name))
+     ["Darth Vader" "Mr. Magoo"])
+
+((fn [x] (* x 3)) 8)
+
+(def my-special-multiplier (fn [x] (* x 3)))
+(my-special-multiplier 12)
+
+; comact anonymous functions
+#(* % 3)
+(#(* % 3) 8)
+
+(map #(str "Hi, " %)
+     ["Darth Vader" "Mr. Robot"])
+
+; % means %1 - first argument
+(#(str %1 " and " % %2) "cornbread" "butter beans")
+
+; identity returns the argument it's given without altering it
+(#(identity %&) 1 "blarg" :yip)
+
+; returning functions
+(defn inc-maker
+  "create a custom incrementor"
+  [inc-by]
+  #(+ % inc-by))
+(def inc3 (inc-maker 3))
+(inc3 7)
