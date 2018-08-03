@@ -338,11 +338,23 @@
     (println "Goodbye!")
     (recur (inc iteration))))
 
-(def li ["first" "second" "third"])
-(loop [index 0]
-  (if (get li index)
-    (println (str (get li index)))
-    (recur (inc index))))
 
-()
-(get li 1)
+
+(defn recursive-printer
+  ([]
+   (recursive-printer 0))
+  ([iteration]
+   (println iteration)
+   (if (> iteration 3)
+     (println "goodbye!")
+     (recursive-printer (inc iteration)))))
+(recursive-printer)
+
+#"regular-expression"
+
+
+; takes 1 2 for the first iteration
+(reduce + [1 2 3 4])
+
+; you can add initial value for the first Iteration
+(reduce + 1 [2 3 4])
