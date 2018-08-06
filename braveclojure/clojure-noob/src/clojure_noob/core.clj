@@ -377,3 +377,24 @@
       (if (> accumulated-size target)
         part
         (recur remaining (+ accumulated-size (:size (first remaining))))))))
+
+
+(defn decmaker [decnum] #(- % decnum))
+(def dec9 (decmaker 9))
+(dec9 10)
+
+; (defn mapset [fu]
+;   (set #(map fu %)))
+;
+; (defn mapset2
+;   [fu]
+;   #(map fu (set %)))
+;
+; (defn mapset3
+;   [fu & args]
+;   (map fu (set args)))
+; (mapset3 inc [1 2 3 4])
+(defn mapset
+  [fu listt]
+  (map fu (set (listt))))
+(mapset inc [1 2 3 4])
