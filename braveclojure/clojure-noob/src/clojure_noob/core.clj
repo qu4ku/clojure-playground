@@ -394,7 +394,33 @@
 ;   [fu & args]
 ;   (map fu (set args)))
 ; (mapset3 inc [1 2 3 4])
-(defn mapset
-  [fu listt]
-  (map fu (set (listt))))
-(mapset inc [1 2 3 4])
+; (defn mapset
+;   [fu listt]
+;   (map fu (set (listt))))
+
+(defn mapset [fu li]
+  (map fu (set li)))
+(mapset inc [1 1 2 2])
+
+; Use the str, vector, list, hash-map, and hash-set functions.
+(println (str "ka" "mil"))
+(println '("kamil"))
+(reduce str ["ka" "mil"])
+(println (str ["ka" "mil"]))
+
+(defn joinstr
+  "takes :name variable values and concatenate them"
+  [dict]
+  (reduce str (:name dict)))
+
+(def namelist [{:name "kamil"}
+               {:name "milena"}])
+
+(reduce str (map #(% :name) namelist))
+
+(def true-list '("kamil" "two" 1 "kamil" :kamil))
+(println true-list)
+
+(set true-list)
+(apply hash-set (seq true-list))
+(hash-set true-list)
