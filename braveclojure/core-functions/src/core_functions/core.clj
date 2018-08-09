@@ -39,3 +39,20 @@
   {:human human
    :critter critter})
 (map unify-diet-data human-consumption critter-consumption)
+
+
+(def sum #(reduce + %))
+(def avg #(/ (sum %) (count %)))
+(defn stats
+  [numbers]
+  (map #(% numbers) [sum count avg]))
+
+(stats [3 4 10])
+(stats [80 1 44 13 6])
+
+
+(def identities [
+                 {:alias "batman" :real "bruce wayne"}
+                 {:alias "spider-man" :real "peter parker"}
+                 {:alias "santa" :real "your mum"}])
+(map :real identities)
