@@ -87,3 +87,56 @@
 
 (take-while #(< (:month %) 3) food-journal)
 (drop-while #(< (:month %) 3) food-journal)
+
+
+(take-while #(< (:month %) 4)
+            (drop-while #(< (:month %) 2) food-journal))
+
+(filter #(< (:human %) 5) food-journal)
+
+(filter #(< (:human %) 5)
+        (filter #(> (:human %) 4) food-journal))
+
+; checks if collection contains values that are true for certain function
+(some #(> (:critter %) 5) food-journal)
+(some #(< (:critter %) 4) food-journal)
+
+(some #(and (> (:critter %) 3) %) food-journal)
+
+
+(sort [3 1 32])
+
+(sort-by count["aaa" "c" "bb"])
+
+(sort (concat [1 2] [2 4] [34 5]))
+
+(def vampire-database
+  {0 {:makes-blood-puns? false :has-pulse? true :name "MCFishwisch"}
+   1 {:makes-blood-puns? false :has-pulse? true :name "Someone"}
+   2 {:makes-blood-puns? true :has-pulse? false :name "KingFisher"}
+   3 {:makes-blood-puns? true :has-pulse? true :name "Mickey"}})
+
+
+(defn vampire-related-details
+  [social-security-number]
+  (Thread/sleep 1000)
+  (get vampire-database social-security-number))
+
+(vampire-related-details 1)
+
+(defn vampire?
+  [record]
+  (and (:makes-blood-puns? record)
+       (not (:has-pulse? record))
+       record))
+
+(defn identify-vampire
+  [social-security-numbers]
+  (first (filter vampire?
+                 (map vampire-related-details social-security-numbers))))
+
+(time (vampire-related-details 0))
+
+(time (def mapped-details (map vampire-related-details (range 0 1000000))))
+
+(time (first mapped-details))
