@@ -140,3 +140,57 @@
 (time (def mapped-details (map vampire-related-details (range 0 1000000))))
 
 (time (first mapped-details))
+
+(time (identify-vampire (range 0 100000)))
+
+; Infinite sequences
+(concat (take 8 (repeat "na")) ["Batman!"])
+
+(take 8 (repeat "na"))
+
+(take 3 (repeatedly (fn [] (rand-int 10))))
+
+(defn even-numbers
+  ([] (even-numbers 0))
+  ([n] (cons n (lazy-seq (even-numbers (+ n 2))))))
+
+(take 10 (even-numbers))
+
+(cons 0 '(2 5  6))
+
+
+; the collection abstraction
+
+(empty? [])
+(empty? ["no!"])
+(empty? [{} {} {}])
+
+
+(map identity {:sunlight-reaction "Glitter!"})
+(into {} (map identity {:sunlight-reaction "Glitter"}))
+(map identity [:garlic :sesame-oil :fried-eggs])
+(into {} (map identity {:sunlight-reaction "Glitter"}))
+
+(map identity [:garlic :sesame-oil :fried-eggs])
+(into [] (map identity [:garlic :sesame-oil :fried-eggs]))
+
+
+(map identity [:garlic-clove :garlic-clove])
+(into #{} (map identity [:garlic-clove :garlic-clove]))
+
+(into #{} ["kamil" "kamil"])
+
+(into {:favourite-emotion "gloomy"} [[:sunlight-reaction "glitter"]])
+
+(into ["cherry"] '("pine" "spruce"))
+
+(into {:favorite-animal "kitty"} {:least-favorite-smell "dog"
+                                  :relationship-with-teenager "creep"})
+(conj [0] [1])
+(into [0] [1])
+(into [0] [[1]])
+
+(conj [0] 1)
+(conj [0] 1 2 3 4)
+
+(conj {:time "midnight"} [:place "ye olde cemetarium"])
