@@ -228,3 +228,38 @@
 
 (def add20 (my-partial + 20))
 (add20 3)
+
+
+(defn lousy-logger
+  [log-level message]
+  (condp = log-level
+    :warn (clojure.string/lower-case message)
+    :emergency (clojure.string/upper-case message)))
+
+(def warn (partial lousy-logger :warn))
+
+
+(warn "Red light ahead")
+
+
+
+; complement
+
+(defn identify-humans
+  [social-security-numbers]
+  (filter #(not (vampire? %))
+          (map vampire-related-details social-security-numbers)))
+
+(def not-vampire? (complement vampire?))
+(defn identify-humans
+  [social-security-numbers]
+  (filter #(not-vampire? %)
+          (map vampire-related-details social-security-numbers)))
+(defn my-complement
+  [fun]
+  (fn [& args]
+    (not (apply fun args))))
+
+(def my-pos? (complement neg?))
+(my-pos? 1)
+(my-pos? -2)
