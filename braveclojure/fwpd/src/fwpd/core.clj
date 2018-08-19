@@ -89,7 +89,21 @@
  [list-of-maps]
  ())
 
-(def col '({:name "Edward Cullen", :glitter-index 10} {:name "Bella Swan", :glitter-index 0} {:name "Charlie Swan", :glitter-index 0} {:name "Jacob Black", :glitter-index 3} {:name "Carlisle Cullen", :glitter-index 6}))
+(def col '({:name "Edward Cullen" :glitter-index 10} {:name "Bella Swan" :glitter-index 0} {:name "Charlie Swan" :glitter-index 0} {:name "Jacob Black" :glitter-index 3} {:name "Carlisle Cullen" :glitter-index 6}))
+(clojure.string/join "\n" col)
+
+(map #(clojure.string/join "\n" %) col)
+
+(clojure.string/join "\n" (map join "," (map #(:name %) col) (map #(:glitter-index %) col)))
 
 
-(clojure.string/join col ",")
+
+
+(apply reduce into {} col)
+
+
+(defn into-str
+  [map]
+  (str (:name map) (str ",") (:glitter-index map)))
+
+(clojure.string/join "\n " (map into-str col))
