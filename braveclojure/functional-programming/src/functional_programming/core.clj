@@ -49,3 +49,66 @@ great-baby-name
           (recur (rest vals) (+ (first vals) accumulating-total))))))))
 
 (sum [10 20])
+
+
+(require '[clojure.string :as s])
+(defn clean
+  [text]
+  (s/replace (s/trim text) #"lol" "LOL"))
+
+(clean "My boa constrictor is so sassy lol!   ")
+
+
+; comp
+((comp inc *) 2 3)
+
+(def character
+  {:name "Smooches McCutes"
+   :attributes {:intelligence 10
+                :strength 4
+                :dexterity 5}})
+
+(def c-int (comp :intelligence :attributes))
+(def c-str (comp :strength :attributes))
+(def c-dex (comp :dexterity :attributes))
+
+(c-int character)
+(c-str character)
+
+; same as
+((fn [c] (:strength (:attributes c))) character)
+
+(defn spell-slots
+  [char]
+  (int (int (/ (c-int char) 2))))
+
+(spell-slots character)
+
+(def spell-slots-comp (comp int inc #(/ % 2) c-int))
+
+(spell-slots-comp character)
+
+(defn two-comp
+  [f g]
+  (fn [& args]
+    (f (apply g args))))
+
+(+ 3 (+ 5 8))
+
+(+ 3 13)
+
+(defn sleepy-identity
+  "Returns the given value after 1 second"
+  [x]
+  (Thread/sleep 1000)
+  x)
+
+(sleepy-identity "Mr. Fantastico")
+
+(sleepy-identity "Mr. Fantastico")
+
+(def memo-sleepy-identity (memoize sleepy-identity))
+
+(memo-sleepy-identity "Mr. T")
+
+(memo-sleepy-identity "Mr. T")
