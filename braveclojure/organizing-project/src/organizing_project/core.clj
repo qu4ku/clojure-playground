@@ -66,3 +66,14 @@ bries
 
 (clojure.core/alias 'taxonomy 'cheese.taxonomy)
 taxonomy/bries
+
+
+(in-ns 'cheese.taxonomy)
+(def cheddars ["mild" "medium" "strong"])
+(def bries ["wisconsin" "sommers" "brie de meaux"])
+(in-ns 'cheese.analysis)
+bries
+cheddars
+
+
+(clojure.core/get (clojure.core/ns-map clojure.core/*ns*) 'bries)
