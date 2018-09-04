@@ -62,19 +62,22 @@
 (= ((fn [x y](last (take (inc y) x))) '(4 5 6 7) 2) 6)
 
 ; 22
-((fn [x] (last-index-of (last x)) '(1 2 3 3 1)))
+(= (#(reduce + (map (fn [x] '1) (seq %))) '(1 2 3 3 1)) 5)
 
-(#(inc (.lastIndexOf  % (last %))) '(1 2 3 3 1))
+; 23
+(def l '(1 2 3 4 5))
+(reduce conj [] l)
+(reduce cons l [])
 
-(.lastIndexOf '(1 2 3 4) 4)
-(.lastIndexOf "kamil" (str(last "kamil")))
-
-
-(str '(1 2 3))
-
-
-(sequence "kamil")
+(cons 3 [3 4])
+(cons [3 4] 5)
+(conj [3 4] 5)
 
 
 
-(.lastIndexOf "kamil" (last (list"kamil")))
+(def reverse-fu [x]
+  (let [rest x
+        new-list []]
+    (if (count rest 0)
+      new-list
+      (conj new-list (last)))))
