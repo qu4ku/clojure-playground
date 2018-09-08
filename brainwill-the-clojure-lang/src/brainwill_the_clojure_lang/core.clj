@@ -253,3 +253,94 @@
 
 (reductions + [2 3 4 5])
 (reductions + -20 [2 3 4 5 6])
+
+
+; filter : returns a lazy sequence of elements of another sequence for which a condition function returns true
+; remove : like filter, but contains the elements for which the condition function returns false
+; take : returns a lazy sequence of the first n elements of a sequence
+; take-last : returns a lazy sequence of the last n elements of a sequence
+; take-nth : returns a lazy sequence of every nth element of a sequence
+; conccat : returns a lazy sequence that concatenates together multiple sequences
+
+(filter even? [1 2 3 4 5 6 6])
+(filter odd? [1 2 3 4 5 6 6])
+
+(remove even? [1 2 3 4 5 6])
+(remove odd? [1 2 3 4 5 6])
+
+(take 3 [1 2 3 4 5 6])
+(take-last 3 [1 2 3 4 5 6])
+(take-nth 3 [1 2 3 4 5 6 7])
+
+(concat [1 2] [3 4 5] [6])
+(concat [1 [2 3]] [3 [4 5]] [6])
+(concat 1 [2 3]) ; illegal
+
+; core sequence functions
+
+; interleave  : returns a lazy sequence that takes element form multiple collections round-robin
+; interpose   : returns a lazy sequence in which a value is inserted in between elements of a sequence
+; distinct    : returns a lazy sequence in which only the first occurrance of any value is retained
+; reverse     : returns a list of the elements of a sequence in reverse order
+; flatten     : returns a lazy sequence containing the elements of a sequence and its nested sequences
+; sort        : returns a non-lazy sequence of the elements of another sequence in sorted order
+
+(interleave [1 2 3] [1 2 5] [1 2 6 7])
+(interleave [1 2] [2 3] [4 5 6])
+(interpose 3 [7 8 9 10 11])
+
+(distinct [1 1 4 2 3 1 4])
+(reverse [1 2 3])
+
+(flatten [1 2 [3 4 [5 6] 7 8] 9])
+
+(sort [7 3 -5 2])
+(compare 3 4)
+(compare 4 3)
+(compare 3 3)
+
+
+; the in-ns function crates a namespace and makes it the current namespace
+(in-ns 'foo')
+
+; symbol-to-var (interned)
+(def bar 4)
+(defn zeros []
+  (lazy-seq
+   (cons 0 (zeros))))
+
+; symbol-to-var (reffered)
+(clojure.core/refer 'foo)
+
+; symbol-to-class
+(clojure.core/import java.util.Date)
+
+; symbol-to-namespace
+(clojure.core/alias 'super' 'supercalifragilisticexpialadocius)
+(supe/foo) ;same as (supercalifragilisticexpialadocius/foo)
+
+
+; read-eval a file with the load function
+(load "bar/baz")
+
+; the require function loads a lib by its symbolic name and ensures switch back
+; namepsace before the load
+
+(in-ns 'foo)
+(require 'clojure.java.io)  ; loads clojure/java/io.clj
+; .. foo is still current namespace
+(require '(clojure.java [io :as bar]))
+
+
+; the use function is like require but also refers the namespace of the same name
+
+; loads clojure/java/io.clj and refers bar.baz in current namespace
+(use 'clojure.java.io)
+
+
+; the ns macro conveniently bundles the functionality of in-ns, require, use, and import.
+
+(ns foo.bar
+  (:require clojure.contrib.sql)
+  (:use clojure.test)
+  (:import java.util.Date java.util.Timer))
