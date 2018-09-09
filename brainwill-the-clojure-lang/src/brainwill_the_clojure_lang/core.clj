@@ -344,3 +344,108 @@
   (:require clojure.contrib.sql)
   (:use clojure.test)
   (:import java.util.Date java.util.Timer))
+
+
+; any clojure object (except numbers, booleans, string, and nil)
+; can have an associated map as metadata.
+(with-meta [1 2] {:so-meta true})
+
+(def x (with-meta [1 2] {:so-meta true}))
+(meta x)
+; another way to attach metadata
+^{:so-meta true} [1 2]
+(def y ^{:so-meta true} [1 2])
+(:so-meta (meta y))
+
+(def ^{:so-meta true} z 3)
+
+(= ^{:so-meta true} [1 2] ^{:so-meta false} [1 2])
+
+
+; a function can have multiple arities
+(def foo
+  (fn
+    ([a b c]
+     (+ a b c))
+    ([a b]
+     (- a b))))
+(foo 1 2 3)
+(foo 3 5)
+
+
+; 'destructuring' alows us to conveniently bind elements of collecions to symbols.
+(def s [1 2 3])
+
+; without destructuring
+(let [x (first s)
+      y (second s)]
+  (+ x y))
+
+; with destructuring
+(let [[x y] s]
+  (+ x y))
+
+(let [[x y z] s]
+  (do-stuff x y z l)) ; + 1 2 3 nil
+
+(def m {:y 3 :x 8 :z -5})
+
+; with destructuring - works with maps too
+(let [{x :x} m]
+  (+ x))
+(let [{x :x} m
+      {y :y} m]
+  (+ x y))
+
+; nested
+(def n {:y 3 :x [8 10] :z -5})
+(let [{[a b] :x} n]
+  (+ a b))
+
+(defn foo [[a b]]
+  (print a b))
+(foo [6 4])
+
+(def s (hash-set 5 8 "hi" 8))
+(conj s 11)
+(get s "hi")
+(get s 24)
+; to remove element:
+(disj s 5)
+
+; soreted-set
+(def s (sorted-set 7 2 -5 9))
+(first s)
+(rest s)
+
+; sort-by
+(def s (sorted-set-by > 7 2 -5 9))
+(first s)
+(rest s)
+
+; collection objects are functions
+([8 5 13] 1)
+({:x 9 :y 4} :y)
+(:y {:x 9 :y 4})
+
+
+; #(exp) is shorthand for a function with one expression in the body
+#(print "hello")  ; (fn [] (print "hello"))
+#(print %2 %1)  ; (fn [a b] (print b a))
+#(print %2 %)  ; (fn [a b] (print b a))
+
+; shorthand for a hash set
+#{5 2 "hi"}
+; but it doesn't accept duplicates
+#{5 2 "hi" 5}
+(hash-set 5 2 "hi" 5)
+
+; #' is shorthand for the var special form.
+#'x  ; (var x)
+
+
+; ^symbol is shorthand for ^{:tag symbol}
+^foo  ; ^{:tag foo}
+
+; ^keyword is shorthand for ^{keyword true}
+^:foo  ; ^{:foo true}
