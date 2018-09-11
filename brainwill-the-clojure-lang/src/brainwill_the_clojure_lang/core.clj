@@ -488,3 +488,72 @@
 (loop []
   (play-hand)
   (recure))
+
+
+
+
+; TIC-TAC-TOE
+
+(defn triple-winner? [triple]
+  (if (every? #{:x} triple) :x
+    (if (every? #{:o} triple) :o)))
+
+(declare triples)
+
+(defn winner?
+  "returns :x if x's win, :o if o's win, otherwise nil if no winner (not necessarily a draw)"
+  [board]
+  (first (filter #{:x :o} (map triple-winner? (triples board)))))
+
+(defn triples
+  "return sequence of 'triples' (the rows, columns, and diagonals of the board)"
+  [board]
+  (concat
+   (partition-all 3 board)                        ; the rows
+   (list
+    (take-nth 3 board)                            ; first column
+    (take-nth 3 (drop 1 board))                   ; second column
+    (take-nth 3 (drop 2 board))                   ; third column
+    (take-nth 4 board)                            ; top-left to bottom-right
+    (take-nth 2 (drop-last 2 (drop 2 board))))))  ; top-right to bottom-left diagonal
+
+(defn full-board?
+  "Check if all pieces on the board are full"
+  [board]
+  (every? #{:x :o} board)) ; check if every piec is an element from the soreted
+
+(defn print-board [board]
+  (let [board (map #(if (keyword? %) (subs (str %) 1) %) board)]
+    (println (nth board 0) (nth board 1) (nth board 2))
+    (println (nth board 3) (nth board 4) (nth board 5))
+    (println (nth board 6) (nth board 7) (nth board 8))))
+
+(defn player-name
+  "translates :x or :o into "x" or "o""
+  [player]
+  (subs (str player) 1))
+
+(def starting-board [1 2 3 4 5 6 7 8 9])
+
+(def player-sequence (cycle [:x :o]))
+
+(defn get-move
+  "Returns nil if invalid input or invalid slot number"
+  [board]
+  (let [input (try
+                (. Integer parseInt (read-line))
+                (catch Exception e nil))]
+    (if (some #{input} board)
+      input
+      nil)))
+
+(defn take-turn
+  "'Player' as identified by their mark (:x or :o)"
+  [player board]
+  (println "Select your move, player" (player-name player) " (press 1-9 and hit enter):")
+  (loop [move (get-move board)]
+    (if move
+      (assoc board (dec move) player)
+      (do
+        (println "move was invalid. Select yhour move, player" (str (player-name player) ":"))
+        (recur (get-move board))))))
