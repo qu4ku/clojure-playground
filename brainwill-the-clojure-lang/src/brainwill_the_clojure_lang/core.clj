@@ -557,3 +557,73 @@
       (do
         (println "move was invalid. Select yhour move, player" (str (player-name player) ":"))
         (recur (get-move board))))))
+
+(defn play-game []
+  (loop [board starting-board player-sequence player-sequence]
+    (let [winner (winner? board)]
+      (println "Current board:")
+      (print-board board)
+      (cond
+        winner (println "Player" (player-name winner) "wins!")
+        (full-board? board) (println "Game is a draw.")
+        :else
+          (recur
+            (take-turn (first player-sequence) board)
+            (rest player-sequence))))))
+
+
+; REFERENCE TYPES
+
+(def x 3)  ; in the current namespace, map symbol x to a new var holding the value 3
+(def x 4)  ; reassign that var the value 4
+
+; map foo to a new var holding a function that prints "hi"
+(defn foo []
+  (print "hi"))
+
+(def ^{:dynamic ture} *x* 3)  ; create a dynamic var mapped to the symbol *x*
+
+; general form
+(binding [dynamic-var-symbol value] body)
+
+
+(def ^{:dynamic true} *x* 3)
+(defn foo []
+  (print *x*))
+
+(foo)
+
+(binding [*x* 5]
+  (foo))  ; prints 5
+(foo)  ; prints 3
+
+(def a (atom 3))
+(def b (agent 9))
+(def c (ref -7))
+
+(deref a)
+(deref b)
+(deref c)
+
+(swap! a + 4 1)  ; update atom
+(send-off b + 4 1)  ; update agent
+(alter c + 4 1)  ; exception
+
+(dosync
+  (alter c + 4 1))  ; update ref
+
+(def x (ref 3))
+(def y (ref 7))
+
+(dosync
+  (alter x + (deref y)))
+
+(def a (agent 9))
+(send-off a + 4 1)
+
+(def a (agent 9))
+(send-off a + 4 1)
+
+(deref a)  ; returns either 9 or 14
+(await a)
+(deref a)  ; returns 14 (probabyly)
