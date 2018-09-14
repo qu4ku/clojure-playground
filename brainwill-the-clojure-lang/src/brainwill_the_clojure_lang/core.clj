@@ -627,3 +627,48 @@
 (deref a)  ; returns either 9 or 14
 (await a)
 (deref a)  ; returns 14 (probabyly)
+
+
+
+; create a macro with the macro
+(defmacro if-not [condition expression]
+  (list 'if condition nil expression))
+
+; (if (> 35) nil (print("hi"))
+
+(if-not (> 3 5) (print "hi"))
+
+
+(defmacro if-not
+  ([condition expression]
+   (list 'if condition nil expression))
+  ([condition expression2 expression3]
+   (list 'if condition expression3 expression2)))
+
+(if-not (> 3 5) (print "hi") (print "bye"))
+
+; first rule of macro club: don't write macros!
+; macros only run at compile time
+; strange macros cand o strange things
+
+
+; the gensym function generates a unique symbol
+
+; returns symbol G_x, where x is some number that has not been previously used
+(gensym)
+
+; returns symbol foox, where x is some number that has not been previously used
+(gensym "foo")
+
+(defmacro make-fn [exp]
+  (list 'fn '[foo] (list 'foo exp)))
+(make-fn bar)
+(make-fn foo)
+
+
+(defmacro make-fn [exp]
+  (let [x (gensym)]
+    (list 'fn (vector x) (list x exp))))
+
+(make-fn bar)
+(make-fn foo)
