@@ -28,10 +28,26 @@
 
 
 ; Filter Positions in a List
-; (fn [list]
-;   (let [idx 0 max_id (count list) new_list ()]
-;     (while (idx <= max_id)
-;       (if (= (rem idx 2) 0)
-;         (conj)))))
-;
-; (take (count list) )
+(def list [0 1 2 3 4 5 6 7 8 9 10])
+
+((defn solve [x] (take-nth 2 (rest x))) list)
+
+; Array Of N Elements
+(fn[n] (take n (range)))
+
+; Reverse a List
+(fn[lst] (reverse lst))
+
+; Sum of Odd Elements
+((fn [lst] (reduce + (filter odd? lst))) list)
+
+; List Length
+(fn [lst] (reduce + (map #(fn [x] 1) lst)))
+
+
+; Update List
+(def list [0 1 2 3 -4 5 6 7 -8 9 10])
+(
+  (fn [lst] (map (fn [x] (max x (- x))) lst))
+
+ list)
