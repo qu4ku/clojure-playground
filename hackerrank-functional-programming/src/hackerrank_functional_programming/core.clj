@@ -51,3 +51,30 @@
   (fn [lst] (map (fn [x] (max x (- x))) lst))
 
  list)
+
+
+; Evaluating e^x
+(def x 20.0000)
+
+(Integer/parseInt x)
+(int x)
+
+
+(def x -0.5000)
+
+(loop [n 0
+       total []
+       x (int x)]
+  (if (= n 10)
+    (println (format "%.4f" (float (reduce + total))))
+    (recur (inc n) (conj total (/ (reduce *((fn [x n] (repeat n x)) x n)) (reduce * (rest (take (+ n 1) (range)))))) x)))
+
+(defn pow [x n]
+  (reduce *((fn [x n] (repeat n x)) x n)))
+
+
+(defn factorial [n]
+  (reduce * (rest (take (+ n 1) (range)))))
+(factorial 5)
+
+(/ (reduce *((fn [x n] (repeat n x)) x n)) (reduce * (rest (take (+ n 1) (range)))))
