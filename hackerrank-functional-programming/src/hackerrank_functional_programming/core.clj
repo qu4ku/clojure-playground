@@ -69,3 +69,13 @@
       (if (= n 10)
         (println (format "%.4f" (float (reduce + total))))
         (recur (inc n) (conj total (/ (Math/pow x n) (reduce * (rest (take (+ n 1) (range)))))) x))))
+
+
+;
+
+(def x_str "1 2 3 4 5")
+
+(map #(Integer/parseInt %) (clojure.string/split x_str #" "))
+(clojure.string/split x_str #" ")
+
+(map #(Integer/parseInt %) ["7" "8"])
