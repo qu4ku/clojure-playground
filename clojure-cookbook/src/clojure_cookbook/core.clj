@@ -128,3 +128,150 @@
   (str "[" full-match "](https://github.com/" repo "/issues/" id ")"))
 (defn linkify-comment [repo comment]
   (clojure.string/replace comment #"#(\d+)" (partial linkify repo)))
+
+
+; 1.10 splittin a stling into parts
+
+(clojure.string/split "HEADER1,HEADER2,HEADER3" #",")
+(clojure.string/split "Spaces      Newlines\n\n" #"\s+")
+
+; splitting on whitespace without an explicit limit performs an implicit triml
+(clojure.string/split "field1    field2   field3  " #"\s+")
+
+; if you want every match, including trailing empty ones
+(clojure.string/split "ryan,neufeld," #"," -1)
+
+(def data-delimiters #"[ :-]")
+(def date "2013-04-05 14:39")
+(clojure.string/split date data-delimiters)
+; limit of 1 returns full string
+(clojure.string/split date data-delimiters 1)
+(clojure.string/split date data-delimiters 2)
+(clojure.string/split date data-delimiters 3)
+
+
+; 1.11 pluralizing string based on quantity
+; lein try inflections
+(require '[inflections.core :as inf])
+(inf/pluralize 1 "monkey")
+(inf/pluralize 12 "monkey")
+(inf/pluralize 1 "box" "boxen")
+(inf/pluralize 22 "box" "boxen")
+(inf/plural "box")
+; words ending in 'ox' pluralize with 'en' (and not 'es')
+(inf/plural! #"(ox)(?i)$" "$1en")
+(inf/plural "box")
+(inf/pluralize 2 "box")
+; convert snake_case to CamelCase
+(inf/camelize "my_object") ; doesn't work
+(inf/parameterize "My most favorite URL!")
+(inf/ordinalize 42)
+
+; 1.12 converting between string, symbols, and keywords
+; to convert from string to a symbol
+(symbol "valid?")
+; from symbol to string
+(str 'valid?)
+; keyword to str
+(name :triumph)
+(str :triumph)
+; from a string or symbol to keyword
+(keyword "fantastic")
+(keyword 'fantastic')
+(symbol (name :wonderful))
+
+(name :user/valid?)
+(str :user/valid?)
+(namespace :user/valid?)
+(.substring (str :user/valid?) 1) ; takes substring starting from index 1
+(keyword 'produce/onions)
+(symbol (.substring (str :produce/onions) 1))
+(keyword "bakery" "bagels")
+(symbol "bakery" "cakes")
+
+
+; 1.13 maintaining accuracy with extremely large/small numbers
+; avogardo's number
+6.0221413e23
+; 1 angstrom in meters
+1e-10
+
+(* 9999 9999 9999 9999 9999)
+; use quote version of numeric operations like - or * to allow Big types
+; clojure will use BigInteger if needed
+(*' 9999 9999 9999 9999 9999)
+
+; for floats you need to use BigDecimal
+; bot BigInteger and BigDecimal are "contagious"
+; = it infects all of the follow-on results
+(* 2 Double/MAX_VALUE)
+(* 2 (bigdec Double/MAX_VALUE))
+
+
+; 1.14 working with rational numbers
+(/ 1 3)
+(type (/ 1 3))
+(* 3 (/ 1 3))
+; use rationalize on doubles to coerce them to rationals to avoid losing precion
+(+ (/ 1 3) 0.3)
+(rationalize 0.3)
+(+ (/ 1 3) (rationalize 0.3))
+(rationalize 0.999999)
+
+
+; 1.15 parsing numbers
+(Integer/parseInt "-42")
+(Double/parseDouble "3.14")
+(rationalize (Double/parseDouble "3.14"))
+; when the numbers you are parsin are either abnormally large or abnormaly precise,
+; you'll need to parse them with BigInteger or BigDecimal
+(bigdec "3.430932974329874982374982739847293847298374")
+(bigint "3284723894798237498237498238749872398472938479273")
+
+
+; 1.16 truncating and rounding numbers
+(int 2.0001)
+(int 2.9999)
+(Math/round 2.0001)
+(Math/round 2.9999)
+(Math/round 2.5000)
+(Math/round 2.4999)
+
+; Math/floor ~ceil return float
+(Math/ceil 2.0001)
+(Math/floor 2.999)
+(int (Math/floor 2.999))
+
+(with-precision 3 (/ 7M 9))
+(with-precision 1 (/ 7M 9))
+(with-precision 1 :rounding FLOOR (/ 7M 9))
+
+; gotcha - you need to convert to BigDecimal
+(with-precision 3 (/ 1 3))
+(with-precision 3 (bigdec(/ 1 3)))
+
+
+; 1.17 performing fuzzy comparison
+; by-hand implementation
+(defn fuzzy= [tolerance x y]
+  (let [diff (Math/abs (- x y))]
+    (< diff tolerance)))
+(fuzzy= 0.01 10 10.000000001)
+(fuzzy= 0.01 10 10.1)
+(- 0.22 0.23)
+(- 0.23 0.24)
+; if absolute precision is what you're after, use BigDecimal or BigInt
+(def equal-within-ten? (partial fuzzy= 10))
+(equal-within-ten? 100 109)
+(equal-within-ten? 100 110)
+
+(partial fuzzy= 10)
+
+;; partial
+(defn sum [x y]
+  (+ x y))
+(sum 2 5)
+(map (partial sum 10) [1 2 20 30])
+(reduce + [1 2 3 4])
+(reduce + [1 2 3 4] [5 6 7 8]) ; invalid arguments
+(map (partial reduce +)[[1 2 3 4] [5 6 7 8]])
