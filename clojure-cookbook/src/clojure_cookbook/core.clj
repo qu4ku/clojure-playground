@@ -265,7 +265,6 @@
 (equal-within-ten? 100 109)
 (equal-within-ten? 100 110)
 
-(partial fuzzy= 10)
 
 ;; partial
 (defn sum [x y]
@@ -275,3 +274,96 @@
 (reduce + [1 2 3 4])
 (reduce + [1 2 3 4] [5 6 7 8]) ; invalid arguments
 (map (partial reduce +)[[1 2 3 4] [5 6 7 8]])
+
+(defn fuzzy-comparator [tolerance]
+  (fn [x y]
+    (if (fuzzy= tolerance x y)
+      0
+      (compare x y))))
+
+(sort (fuzzy-comparator 10) [100 11 150 10 8])
+
+(sort [100 11 150 10 8])
+
+
+; 1.18 performing trigonometry
+; all of the trigonometric functions are accessible via java.long.Math
+
+; calculation sin(a + b): sin(a + b) = sin a * cos b cos a
+(defn sin-plus [a b]
+  (+
+   (* (Math/sin a) (Math/cos b))
+   (* (Math/sin b) (Math/cos a))))
+(sin-plus 0.1 0.3)
+
+; calculating the distance in kilometers between two poins on earth
+(def earth-radius 6371.009)
+
+(defn degrees->radians [point]
+  (mapv #(Math/toRadians %) point))
+
+(defn distance-between
+  "Calculate the distance in km between two points on Earth. Earch point is
+  a pair of degrees latitude and longitude, in that order."
+  ([p1 p2] (distance-between p1 p2 earth-radius))
+  ([p1 p2 radius]
+   (let [[lat1 long1] (degrees->radians p1)
+         [lat2 long2] (degrees->radians p2)]
+     (* radius
+        (Math/acos (+ (* (Math/sin lat1) (Math/sin lat2))
+                      (* (Math/cos lat1)
+                         (Math/cos lat1)
+                         (Math/cos lat2)
+                         (Math/cos (- long1 long2)))))))))
+(distance-between [49.2000 -98.1000] [35.9939 -78.8989])
+
+
+; 1.19 inputting and outputting integers with different bases
+
+; Specify the base or radix of a literal number by prefixing it with the radix
+; numberand the letter r
+
+2r101010
+3r1120
+16r2a
+36rABUNCH
+
+(Integer/toString 13 2)
+(Integer/toString 42 16)
+(Integer/toString 35 36)
+
+; unlike the ordering of most clojure functions, this method thakes an integer
+; first and the optional base second, making it hard to partially apply
+(defn to-base [radix n]
+  (Integer/toString n radix))
+(def base-two (partial to-base 2))
+(base-two 9001)
+
+
+; 1.20 calculating statistics on collections of nmbers
+(defn mean [coll]
+  (let [sum (apply + coll)
+        count (count coll)]
+    (if (pos? count)
+      (/ sum count)
+      0)))
+(mean [1 2 3 4])
+(bigdec (mean [1 2 3 4]))
+(mean [1 1.6 7.4 10])
+(mean [])
+
+(reduce + [1 2 3 4])
+(apply + [1 2 3 4])
+
+(defn median [coll]
+  (let [sorted (sort coll)
+        cnt (count sorted)
+        halfway (int (/ cnt 2))]
+    (if (odd? cnt)
+      (nth sorted halfway)
+      (let [bottom (dec halfway)
+            bottom-val (nth sorted bottom)
+            top-val (nth sorted halfway)]
+        (mean [bottom-val top-val])))))
+(median [5 2 4 1 3])
+(median [7 0 2 4])
