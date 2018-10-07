@@ -367,3 +367,26 @@
         (mean [bottom-val top-val])))))
 (median [5 2 4 1 3])
 (median [7 0 2 4])
+
+(defn mode [coll]
+  (let [freqs (frequencies coll)
+        occurances (group-by second freqs)
+        modes (last (sort occurances))
+        modes (->> modes
+                   second
+                   (map first))]
+    modes))
+
+(mode [:alan :bob :alan :greg])
+(mode [:smith :carpenter :doe :smith :doe])
+
+
+
+
+
+(frequencies [1 2 2 3 4 5 1 1 1])
+(get (frequencies [1 2 2 3 4 5 1 1 1]) 1)
+((frequencies [1 2 2 3 4 5 1 1 1]) 1)
+(group-by second (frequencies [1 2 2 3 4 5 1 1 1]))
+
+(filter #{1} [1 2 3])
