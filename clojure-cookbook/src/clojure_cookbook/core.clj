@@ -163,7 +163,7 @@
 (inf/plural "box")
 (inf/pluralize 2 "box")
 ; convert snake_case to CamelCase
-(inf/camelize "my_object") ; doesn't work
+; (inf/camelize "my_object") ; doesn't work
 (inf/parameterize "My most favorite URL!")
 (inf/ordinalize 42)
 
@@ -380,13 +380,93 @@
 (mode [:alan :bob :alan :greg])
 (mode [:smith :carpenter :doe :smith :doe])
 
-
-
-
-
 (frequencies [1 2 2 3 4 5 1 1 1])
 (get (frequencies [1 2 2 3 4 5 1 1 1]) 1)
 ((frequencies [1 2 2 3 4 5 1 1 1]) 1)
 (group-by second (frequencies [1 2 2 3 4 5 1 1 1]))
 
 (filter #{1} [1 2 3])
+
+(defn standard-deviation [coll]
+  (let [avg (mean coll)
+        squares (for [x coll]
+                  (let [x-avg (- x avg)]
+                    (* x-avg x-avg)))
+        total (count coll)]
+    (-> (/ (apply + squares)
+           (- total 1))
+        (Math/sqrt))))
+
+(standard-deviation [1 3 4 55 4])
+
+
+; 1.21 performing bitwise operations
+; modeling a subset of unix filesystem flags in a single integer
+(def fs-flags [:owner-read :owner-write
+               :group-read :group-write
+               :global-read :global-write])
+(def bitmap (zipmap fs-flags
+                    (map (partial bit-shift-left 1) (range))))
+bitmap
+(zipmap fs-flags (map inc (range)))
+
+(defn permissions-int [& flags]
+  (reduce bit-or 0 (map bitmap flags)))
+(def owner-only (permissions-int :owner-read :owner-write))
+(Integer/toBinaryString owner-only)
+(def read-only (permissions-int :owner-read :group-read :global-read))
+(Integer/toBinaryString read-only)
+(defn able-to? [permissions flag]
+  (not= 0 (bit-and permissions (bitmap flag))))
+(able-to? read-only :global-read)
+(able-to? read-only :global-write)
+
+; modeling a subset of unix filesystem flags in a signle integer
+(def fs-flags [:owner-read :owner-write
+               :group-read :group-write
+               :global-read :global-write])
+(def bitmap (zipmap fs-flags
+                    (map #(.indexOf fs-flags %) fs-flags)))
+(def no-permissions 0)
+(def owner-read (bit-set no-permissions (:owner-read bitmap)))
+(Integer/toBinaryString owner-read)
+
+(def anything (reduce #(bit-set %1 (bitmap %2)) no-permissions fs-flags))
+(Integer/toBinaryString anything)
+
+
+; 1.22 generating random numbers
+(rand)
+(rand)
+; rand-int for random integers
+; emulating a six-sided die
+(defn roll-d6 []
+  (inc (rand-int 6)))
+(roll-d6)
+
+; random from collection
+(rand-nth [1 2 3])
+(rand-nth '(:a :b :c))
+; whis won't work for sets or hash maps, however
+; need to convert into sequence
+(rand-nth (seq #{:heads :tails}))
+; to randomly sort a collection
+(shuffle [1 2 3 4 5 6])
+
+
+; 1.23 working with currency
+(require '[clojurewerkz.money.amounts :as ma])
+(require '[clojurewerkz.money.currencies :as mc])
+
+(def two (ma/amount-of mc/USD 2))
+two
+(ma/plus two two)
+(ma/minus two two)
+(ma/< two (ma/amount-of mc/USD 2.01))
+(ma/total [two two two two])
+
+; don't trust build in numerical types with handling currency
+(- 0.23 0.24)
+
+(ma/round (ma/amount-of mc/USD 3.14) 0 :down)
+(ma/convert-to (ma/amount-of mc/CAD 152.34) mc/USD 1.01696 :down)
