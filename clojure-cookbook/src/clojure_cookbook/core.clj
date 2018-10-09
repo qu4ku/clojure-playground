@@ -470,3 +470,18 @@ two
 
 (ma/round (ma/amount-of mc/USD 3.14) 0 :down)
 (ma/convert-to (ma/amount-of mc/CAD 152.34) mc/USD 1.01696 :down)
+
+
+; 1.24 generating unique ids
+(java.util.UUID/randomUUID)
+
+
+; 1.25 obtaining the current data and time
+(defn now []
+  (java.util.Date.))
+(now)
+(now)
+(System/currentTimeMillis)
+(System/currentTimeMillis)
+
+(require '[clj-time.core :as t])
