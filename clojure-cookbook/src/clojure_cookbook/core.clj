@@ -485,3 +485,38 @@ two
 (System/currentTimeMillis)
 
 (require '[clj-time.core :as t])
+(t/now)
+(require '[clj-time.local :as tl])
+(tl/local-now)
+
+
+; 1.26 representing dates as literals
+(def date_now (java.util.Date.))
+(println date_now)
+
+; a faux communication channel that "receives" edn strings
+(require 'clojure.edn)
+(import '[java.io PushbackReader StringReader])
+
+(defn remote-server-receive-date []
+  (-> "#inst \"1987-02-18T18:00:00.000-00:00\""
+      (StringReader.)
+      (PushbackReader.)))
+(clojure.edn/read (remote-server-receive-date))
+
+(def instant "#inst \"1987-02-18T18:00:00.000-00:00\"")
+
+(binding [*data-readers* {'inst clojure.instant/read-instant-calendar}]
+  (class (read-string instant)))
+(binding [*data-readers* {'inst clojure.instant/read-instant-timestamp}]
+  (class (read-string instant)))
+
+
+; 1.27 parsing dates and times using clj-time
+(require '[clj-time.format :as tf])
+(def government-forms-date (tf/formatter "MM/dd/yy"))
+(tf/parse government-forms-date "02/18/87")
+(def wonky-format (tf/formatter "HH:mm:ss:SS' on 'yyy-MM-dd"))
+(tf/parse wonky-format "16:13:49:06 on 2013-04-06")
+
+(class wonky-format)
