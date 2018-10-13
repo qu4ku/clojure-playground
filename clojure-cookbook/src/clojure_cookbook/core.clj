@@ -520,3 +520,101 @@ two
 (tf/parse wonky-format "16:13:49:06 on 2013-04-06")
 
 (class wonky-format)
+
+
+; 1.28 formatting dates using clj-time
+(require '[clj-time.format :as tf])
+(require '[clj-time.core :as t])
+(tf/unparse (tf/formatters :date) (t/now))
+(t/now)
+(def my-format (tf/formatter "MMM d, yyyy 'at' hh:mm"))
+(tf/unparse my-format (t/now))
+(def abbr-day (tf/formatter "E"))
+(def full-day (tf/formatter "EEEE"))
+(tf/unparse abbr-day (t/now))
+(tf/unparse full-day (t/now))
+
+; if you need native java date/time instances
+(require '[clj-time.coerce :as tc])
+(tc/from-date (java.util.Date.))
+(tc/to-date (t/now))
+(tc/to-long (t/now))
+
+
+; 1.29 comparing dates
+(defn now [] (java.util.Date.))
+(def one-second-ago (now))
+(Thread/sleep 1000)
+
+; it's necessary to use the compare. can't use <=, >, etc.
+; first argument is grater than second
+(compare (now) one-second-ago)
+; first argument is less
+(compare one-second-ago (now))
+; 0 for equality
+(compare one-second-ago one-second-ago)
+
+; clojure sort use compare under the hood
+
+
+; 1.30 calculating the length of a time interval
+(def since-april-first
+  (t/interval (t/date-time 2013 04 01) (t/now)))
+(t/in-days since-april-first)
+(t/in-years since-april-first)
+
+; years since the moon landing
+(t/in-years (t/interval (t/date-time 1969 07 20) (t/now)))
+
+; days from feb 28 to march 1 in 2012 (a leap year)
+(t/in-days (t/interval (t/date-time 2012 02 28)
+                       (t/date-time 2012 03 01)))
+; and in a non-leap year
+(t/in-days (t/interval (t/date-time 2018 02 28)
+                      (t/date-time 2018 03 01)))
+
+
+; 1.31 generating ranges of dates and times
+(require '[clj-time.periodic :as tp])
+(defn time-range
+  "Return a lazy sequence of DateTimes from start to end,
+  incremented by 'step' units of time."
+  [start end step]
+  (let [inf-range (tp/periodic-seq start step)
+        below-end? (fn [t] (t/within? (t/interval start end) t))]
+    (take-while below-end? inf-range)))
+
+(def months-of-the-year (time-range (t/date-time 2012 01)
+                                    (t/date-time 2013 01)
+                                    (t/months 1)))
+; months-of-the-year is an unrealized lazy sequence
+(realized? months-of-the-year)
+(count months-of-the-year)
+(realized? months-of-the-year)
+; there is time-range in clojure
+
+
+; 1.32 generating ranges of dates and times using native java types
+(def daily-from-epoch
+  (let [start-date (java.util.GregorianCalendar. 1970 0 0 0 0)]
+    (repeatedly
+     (fn []
+       (.add start-date java.util.Calendar/DAY_OF_YEAR 1)
+       (.clone start-date)))))
+(take 2 (drop 57 daily-from-epoch))
+
+(defn daily-from-year [& [start-year]]
+  (let [start-date (java.util.GregorianCalendar. (or start-year 1970) 0 0 0 0)]
+    (repeatedly
+     (fn []
+       (.add start-date java.util.Calendar/DAY_OF_YEAR 1)
+       (.clone start-date)))))
+(take 3 (daily-from-year 1999))
+(take 2 (daily-from-year))
+
+(def end-of-days (take 3 (drop 353 (daily-from-year 2012))))
+(def cal-format (java.text.SimpleDateFormat. "EEE M/d/yyyy"))
+(def iso8601-format (java.text.SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+
+(map #(.format cal-format (.getTime %)) end-of-days)
+(map #(.format iso8601-format (.getTime %)) end-of-days)
