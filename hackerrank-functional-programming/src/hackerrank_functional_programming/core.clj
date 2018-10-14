@@ -70,3 +70,7 @@
 
 
 (clojure.string/capitalize "kaMil")
+
+; string mingling 
+
+(println (clojure.string/join "" (flatten (map vector (read-line) (read-line)))))

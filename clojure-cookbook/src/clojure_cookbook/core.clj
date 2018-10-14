@@ -618,3 +618,146 @@ two
 
 (map #(.format cal-format (.getTime %)) end-of-days)
 (map #(.format iso8601-format (.getTime %)) end-of-days)
+
+(defn gregorian-day-seq
+  "Return an infinite sequence of formatted Gregorian day strings
+  starting on January 1st of the given year (default 1970)"
+  [& [start-year date-format]]
+  (let [gd-format (java.text.SimpleDateFormat. (or date-format "EE M/d/yyyy"))
+        start-date (java.util.GregorianCalendar. (or start-year 1970) 0 0 0 0)]
+    (repeatedly
+     (fn []
+       (.add start-date java.util.Calendar/DAY_OF_YEAR 1)
+       (.format gd-format (.getTime start-date))))))
+
+; selects last sun of a year
+(def y2k (take 365 (gregorian-day-seq 2000)))
+(last (filter #(.startsWith % "Sun") y2k))
+
+
+; 1.33 retrieving dates relative to one another
+(require '[clj-time.core :as t])
+
+; 1.day.from_now 
+(-> 1
+    t/days
+    t/from-now)
+(-> 3
+    t/days
+    t/ago)
+
+(t/plus (t/now) (t/years 1))
+(t/minus (t/date-time 2053 12 25) (t/years 2))
+    
+
+; 1.34 working with time zones
+(def bday (t/from-time-zone (t/date-time 1980 10 20 18)
+                            (t/time-zone-for-offset 2)))
+bday
+; what time was it in Brisbane when I was born?
+(def australia-bday
+  (t/to-time-zone bday (t/time-zone-for-id "Australia/Brisbane")))
+australia-bday
+; yet they are the same instant in time.
+(compare bday australia-bday)
+
+ 
+(def la-tz (t/time-zone-for-id "America/Los_Angeles"))
+
+; in winter
+(t/from-time-zone (t/date-time 2012 10 10) la-tz)
+; in summer
+(t/from-time-zone (t/date-time 2012 06 01) la-tz)
+
+
+; 1.35 converting a unix timestamp to a date
+(defn from-unix-time
+  "Return a Java Date object form a Unix time representation expressed
+  in whole seconds."
+  [unix-time]
+  (java.util.Date. unix-time))
+
+(from-unix-time 1366127520000)
+
+; the same but using clj-time
+(require '[clj-time.coerce :as tc])
+(defn datetime-from-unix-time
+  [unix-time]
+  (tc/from-long unix-time))
+(datetime-from-unix-time 1366127520000)
+
+
+; 1.36 converting a date to a unix timestamp
+(defn to-unix-time [date]
+  (.getTime date))
+
+(def date2 (read-string "#inst \"2013-04-16T15:52:00.000-00:00\""))
+(to-unix-time date2)
+
+; same but with clj-time
+(defn datetime-to-unix-time [datetime]
+  (tc/to-long datetime))
+(def datetime (clj-time.core/date-time 2013 04 15 15 52))
+(datetime-to-unix-time datetime)
+
+
+;; CHAPTER 2. COMPOSITE DATA 
+
+; 2.1 Crating a list 
+'(1 :2 "3")
+(list 1 :2 "3")
+; it's better to us list func. quoted lists also prevents from evealueating
+(def x 2)
+'(1 x) ; -> (1 x)
+(list 1 x)
+
+'()
+
+
+; 2.2 crating a list from an existing data structure
+; there are two ways 
+(def ls_structure [1 2 3 4 5])
+(apply list ls_structure)
+(into '() ls_structure)
+(into [] ls_structure)
+; into sequentialy conjoins a sequence
+; into utilizes clojure transients, which provide a coniserable performance 
+; improvement
+
+
+; 2.3 adding an item to a list
+(conj (list 1 2 3) 4)
+(conj (list 1 2 3) 4 5)
+(conj [1 2 3] 4 5)
+; conj add to the begining of the list and to the end of the vector
+; it returns the same data structure
+
+; cons add always on the beginning of the sequence and returns sequence
+(cons 4 (list 1 2 3))
+(class (cons 4 (list 1 2 3)))
+(cons 4 [1 2 3])
+
+
+; 2.4 removing an item from a list
+(pop '(1 2 3))
+(rest '(1 2 3))
+(pop '()) ; illegal
+(rest '())
+(pop [1 2 3])
+; pop works like conj - it deletes first if a list and last if a vector
+; list doesn't support deleting from the middle/end - if needed you have to
+; convert it to the different type and back to the list
+
+
+; 2.5 testing for a list
+
+; instead of using list? use seq? - 
+(list? (list 1 2 3 4))
+(seq? (list 1 2 3 4))
+; cons looks like a list, but is actually a Cons
+(list? (cons 1 '(2 3)))
+(type (cons 1 '(2 3)))
+(seq? (cons 1 '(2 3)))
+(list? (range 3))
+(seq? (range 3))
+(type (range 3))
