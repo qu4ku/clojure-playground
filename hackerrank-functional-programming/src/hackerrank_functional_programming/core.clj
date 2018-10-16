@@ -74,3 +74,29 @@
 ; string mingling 
 
 (println (clojure.string/join "" (flatten (map vector (read-line) (read-line)))))
+
+
+; String-o-Permute
+(doseq [n-itr (range (Integer/parseInt (read-line)))]
+  (let [s (read-line)
+        fst (take-nth 2 s)
+        scd (take-nth 2 (rest s))]
+    (println (clojure.string/join "" (flatten (map vector scd fst))))
+  
+
+    (def string (read-line))))
+
+
+
+; String Reductions
+(def string "accabb")
+(loop [final []
+       fst (first string)
+       rst (rest string)]
+  (if (empty? rst)
+    (println (apply str final))
+    (if (contains? final fst)
+      (recur final (first rst) (rest rst))
+      (do 
+        (println class fst)
+        (recur (conj final fst) (first rst) (rest rst))))))

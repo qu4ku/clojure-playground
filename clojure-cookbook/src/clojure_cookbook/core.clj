@@ -761,3 +761,80 @@ australia-bday
 (list? (range 3))
 (seq? (range 3))
 (type (range 3))
+
+
+; 2.6 crating a vector
+[1 :2 "3"]
+(class [1 :2 "3"])
+(vector 1 :2 "3")
+
+; to construct a vector from an existing data structure use vec
+(vec '(1 :2 "3"))
+; alternatively you could use into
+(into [] '(1 :2 "3"))
+
+
+; 2.7 adding an item to a vector
+(conj [1 2 3] 4)
+(conj [1 2 3] 4 5)
+
+(assoc [:a :b :c] 3 :x) ; you can assoc to the end
+; and if index is grater than the length it will throw an error
+
+
+; 2.8 removing an item from a vector
+(pop [1 2 3 4]) ; removes from the end
+(pop '(1 2 3 4))
+
+; subvec romoves items from a boundries (inclusive, exclusive)
+(subvec [:a :b :c :d] 1)
+(subvec [:a :b :c :d] 1 3)
+; it's teh only way to efficiently remove items from the beginning of a vector
+; you can use rest or drop but these are sequence operations and they return
+; is only guaranteed to be a sequence
+
+
+; 2.9 getting the value at an index
+; nth works on all sequences
+(nth [:a :b :c :d] 2)
+(nth [:a :b :c] 4) ; IndexOutOfBoundsException
+(nth [:a :b :c] 4 :not-found)
+
+; using vectors as functions of their indexes
+([:a :b :c] 2) ; -> IndexOutOfBoundsException
+
+; using get
+(get [:a :b :c] 2)
+(get [:a :b :c] 5) ; -> nill
+(get [:a :b :c] 5 :not-found)
+
+; 2.10 setting the value at an index
+(assoc [:a :b :c] 1 :x)
+(assoc [:a :b :c] 0 :y 2 :z)
+; throws IndexOutOfBoundsException 
+
+
+; 2.11 creating a set
+#{:a :b :c}
+(class #{:a :b :c})
+#{:a :b :c :c} ; error
+
+(hash-set :a :b :c)
+(apply hash-set :a [:b :c])
+(apply hash-set :a [:b [:c :d]])
+(set "hello")
+(seq "hello")
+
+; alternatively
+(into #{} [:a :b :c :c])
+(into #{:a } [:a :b :c])
+; into is faster for large collections of objects
+(def largeseq (doall (range 1e5)))
+(time (dotimes [_ 100] (set largeseq)))
+(time (dotimes [_ 100] (into #{} largeseq)))
+
+(sorted-set 99 4 32 7)
+(into (sorted-set) "the quick brown fox jumps ove the lazy dog")
+
+(def descending-set (sorted-set-by > 1 2 3))
+(into descending-set [-1 20])
