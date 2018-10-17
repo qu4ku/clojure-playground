@@ -89,14 +89,32 @@
 
 
 ; String Reductions
-(def string "accabb")
+(def string "abc")
 (loop [final []
-       fst (first string)
-       rst (rest string)]
-  (if (empty? rst)
+       f (first string)
+       r (rest string)]
+  (if (empty? r)
     (println (apply str final))
-    (if (contains? final fst)
-      (recur final (first rst) (rest rst))
-      (do 
-        (println class fst)
-        (recur (conj final fst) (first rst) (rest rst))))))
+    (if (some #(= % f) final)
+      (recur final (first r) (rest r))
+      (recur (conj final f) (first r) (rest r)))))
+
+
+; tests
+(def fst (first "kamil"))
+(def final (conj [] (first "kamil")))
+(contains? (conj [] (first "kamil")) (first "kamil"))
+(map keyword final)
+fst
+(contains? final fst)
+
+[\k \b]
+
+(contains? (apply keyword [\k \b]) (keyword \k))
+(contains? [\k \b] (first "kamil"))
+([\k \b] \k)
+(or (map #(= % \k) [\k \b]))
+(map #(= % \k) [\k \b])
+(if (some #(= % \d) [\k \b])
+  (println "true")
+  (println "false"))

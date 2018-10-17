@@ -838,3 +838,48 @@ australia-bday
 
 (def descending-set (sorted-set-by > 1 2 3))
 (into descending-set [-1 20])
+
+
+; 2.12 adding and removing items from sets
+(conj #{:a :b :c} :d)
+(conj #{:a :b :c} :d :e)
+(disj #{:a :b :c} :c)
+(disj #{:a :b :c} :a :b)
+
+
+; 2.13 testing set membership
+(contains? #{:red :white :green} :blue)
+(contains? #{:red :white :green} :white)
+
+(get #{:red :white :green} :blue)
+(get #{:red :white :green} :white)
+
+; set can be functions
+(#{:red :white :green} :blue)
+(#{:red :white :green} :white)
+
+; keywords behave the same way as with maps:
+(:white #{:red :white :green})
+(:black #{:red :white :green})
+
+ ; using set as a function, filter here:
+(take 10
+      (filter #{1 2 3}
+              (repeatedly #(rand-int 10))))
+
+
+; 2.14 using set operations
+(clojure.set/union #{:red :white} #{:white :blue} #{:blue :green})
+(clojure.set/intersection #{:red :white :blue}
+                          #{:red :blue :green}
+                          #{:yellow :blue :red})
+(clojure.set/difference #{:red :white :blue :yellow}
+                        #{:red :blue}
+                        #{:white})
+
+; subset returns true if the first argument is a subset of the second
+(clojure.set/subset? #{:blue :white}
+                     #{:red :white :blue})
+(clojure.set/subset? #{:blue :black}
+                     #{:red :white :blue})
+                     
