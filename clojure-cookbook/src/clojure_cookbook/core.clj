@@ -882,4 +882,130 @@ australia-bday
                      #{:red :white :blue})
 (clojure.set/subset? #{:blue :black}
                      #{:red :white :blue})
+
+
+; 2.15 creating a map
+{:name ""
+ :class :barbarian
+ :race :half-orc
+ :level 20
+ :skills [:bashing :hacking :smashing]}
+
+(array-map)
+(sorted-map :key2 "val1" :key1 "val1")
+; if key is used multiple time the last one will be used
+
+(sorted-map-by #(< (count %1) (count %2))
+               "pigs" 14
+               "horses" 2
+               "elephants" 1
+               "manatees" 3)
+
+
+; 2.16 retrieving values from a map
+(get {:name "Kvothe" :class "Bard"} :name)
+(get {:name "Kvothe" :class "Bard"} :race)
+(get {:name "Kvothe" :class "Bard"} :race "Not-found")
+
+; can use keywords as a functions 
+(:name {:name "Kvothe" :class "Board"})
+(:race {:name "Kvothe" :class "Board"})
+(:race {:name "Kvothe" :class "Board"} "Default")
+
+; for nested maps
+(get-in {:name "Marcus" :weapon {:type :greatsword :damage 25}}
+        [:weapon :damage])
+(get-in {:name "Marcus"} [:weapon :damage])
+(get-in {:name "Marcus"} [:weapon :damage] "Default-if-not-found")
+
+; get-in can be combined with indexes of vectors
+(get-in [{:name "Marcus" :class "Paladin"}
+         {:name "Kam" :class "Druid"}]
+        [1 :class])
+
+
+; 2.17 retrieving multiplekeys from a map simultaneously
+(def beans {:red 10
+            :blue 3
+            :green 1})
+(reduce + (vals (select-keys beans [:red :green])))
+(select-keys beans [:red :green])
+(vals (select-keys beans [:red :green]))
+; use juxt when order matters
+((juxt :red :green) beans)
+((juxt "a" "b") beans)
+(def weird-map {"a" 1, {:foo :bar} :baz, 13 31})
+(select-keys weird-map ["a" {:foo :bar}])
+(vals {{:foo :bar} :baz, "a" 1})
+
+; maps are not ordered, when order is important use juxt
+(def a-str-then-foo-bar-map
+  (juxt #(get % "a")
+        #(get % {:foo :bar})))
+(a-str-then-foo-bar-map weird-map)
+
+
+; 2.18 setting keys in a map
+(def villain {:honorific "Dr." :name "Mayhem"})
+(assoc villain :occupation "Mad Scientist" :status :at-large)
+; if key is already in, the new map will be updated with the new value
+(def villain {:honorific "Dr." :name "Mayhem"
+              :occupation "Mad Scientist" :status :at-large})
+(assoc villain :status :deceased)
+; dissoc for removing
+(def villain {:honorific "Dr." :name "Mayhem"
+              :occupation "Madman" :status :deceased})
+(dissoc villain :occupation :honorific)
+
+(def book {:title "Clojure Cookbook"
+           :author {:name "Ryan Neufeld"
+                    :residence {:country "USA"}}})
+; it is possible to
+(assoc book :author
+       (assoc (:author book) :residence
+              (assoc (:residence (:author book)) :country "Canada")))
+(assoc-in book
+          [:author :residence :country]
+          "Canada")
+
+; when we need to update the value based on previous one
+(def website {:clojure-cookbook {:hits 1236}})
+; register 101 new hits
+(update-in website
+           [:clojure-cookbook :hits]
+           +
+           101)
+
+; update-in will also crate maps
+(update-in {} [:author :residence] assoc :country "USA")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                      
