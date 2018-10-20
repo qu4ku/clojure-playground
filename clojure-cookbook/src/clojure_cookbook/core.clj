@@ -979,9 +979,90 @@ australia-bday
 ; update-in will also crate maps
 (update-in {} [:author :residence] assoc :country "USA")
 
+(def retail-data (atom {:customers [{:id 123 :name "Luke"}
+                                    {:id 321 :name "Ryan"}]
+                        :orders [{:sku "Q2M9" :customer 123 :qty 4}
+                                 {:sku "43XP" :customer 321 :qty 1}]}))
+(swap! retail-data update-in [:orders] conj
+       {:sku "9QED" :customer 321 :qty 2})
 
 
+; using composite values as map keys
+(def chessboard {[:a 5] [:white :king]
+                 [:a 4] [:white :pawn]
+                 [:d 4] [:black :king]})
+(defn move
+  "Given a map representing a chessboard, move the piece at src to dest"
+  [board source dest]
+  (-> board
+      (dissoc source)
+      (assoc dest (board source))))
+(move chessboard [:a 5] [:a 4])
 
+(def plus-two (partial + 2))
+(def plus-three (partial + 3))
+(def weight-map {plus-two 1.0 plus-three 0.8})
+
+(defn apply-weighted
+  "Given a weight map, a function, and args, applies the function to the 
+  args, multiplying the result by the weighting for the function. If the 
+  weight map does not specify a weight for the function, a default of 1.0 is used."
+  [weight-map f & args]
+  (* (get weight-map f 1.0)
+     (apply f args)))
+(apply-weighted weight-map plus-two 2)
+(apply-weighted weight-map plus-three 1)
+
+
+; 2.20 treating maps as sequences (and vice versa)
+(seq {:a 1 :b 2 :c 3 :d 4})
+(def m {:a 1 :b 2})
+(conj m [:c 3])
+(conj m :g: 6) ; doesn't work
+(conj m [:d 4 :e 5]) ; doesn't work
+
+; into uses repeated applications of conj to add items from one sequence onto a
+; collection 
+(into {} [[:a 1] [:b 2] [:c 3]])
+(zipmap [:a :b :c] [1 2 3])
+; zipmap uses lenght of the shorest sequence - extra values are ignored
+
+; hash-map will be in random order
+(seq (hash-map :a 1 :b 2 :c 3))
+(seq (sorted-map :a 1 :c 3 :b 2))
+
+(def entry (first {:a 1 :b 2}))
+entry
+(class entry)
+(key entry)
+(val entry)
+
+
+; 2.21 applying functions to map
+(defn map-keys
+  "Given a map and a funciton, return the map resutling from applying
+  the function to each key."
+  [m f]
+  (zipmap (map f (keys m)) (vals m)))
+
+(map-keys {"a" 1 "b" 2} keyword)
+
+(defn map-vals
+  "Given a map and a funciton, return the map resutling from applying
+  the function to each key."
+  [m f]
+  (zipmap (keys m) (map f (vals m))))
+
+(map-vals {:a 1 :b 1} inc)
+
+(defn map-kv
+  "Given a map and a fuction of two arguments, return the map
+  resulting from applying the function to each of its entries. The
+  provided function must return a pair (a two-element sequence.)"
+  [m f]
+  (into {} (map (fn [[k v]] (f k v)) m)))
+
+(map-kv {"a" 1 "b" 1} (fn [k v] [(keyword k) (inc v)]))
 
 
 
