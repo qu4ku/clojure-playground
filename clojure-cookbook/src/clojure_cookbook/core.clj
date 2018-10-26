@@ -1172,6 +1172,12 @@ entry
 (run-tests)
 
 
+; 2.23 combining maps
+
+; use merge to combine two or more maps with no keys in common
+(def arizona-bird-counts {:cactus-wren 8})
+(def florida-bird-counts {:gull 20 :pelican 14})
+(merge arizona-bird-counts)
 
 
 
@@ -1185,5 +1191,4 @@ entry
 
 
 
-
-                     
+                  
