@@ -1177,11 +1177,44 @@ entry
 ; use merge to combine two or more maps with no keys in common
 (def arizona-bird-counts {:cactus-wren 8})
 (def florida-bird-counts {:gull 20 :pelican 14})
-(merge arizona-bird-counts)
+(merge arizona-bird-counts florida-bird-counts)
+
+(def florida-bird-counts {:gull 20 :pelican 1 :egret 4})
+(def california-bird-counts {:gull 12 :pelican 4 :jay 3})
+
+(merge-with + california-bird-counts florida-bird-counts)
+
+(def votes-am {:vanilla 3 :chocolate 4})
+(def votes-pm {:vanilla 4 :napoliton 2})
+(merge votes-am votes-pm)
+
+(def alice {:loves #{:clojure :lisp :scheme} :hates #{:fortran :c :c++}})
+(def bob {:loves #{:clojure :scheme} :hates #{:c :c++ :algol}})
+(def ted {:loves #{:clojure :lisp :scheme} :hates #{:algol :basic :c++}})
+
+(merge-with clojure.set/intersection alice bob ted)
+
+; merge nested maps with a recursive merge function
+(defn deep-merge
+  [& maps]
+  (apply merge-with deep-merge maps))
+(deep-merge {:foo {:bar {:baz 1}}}
+            {:foo {:bar {:quz 42}}})
+(deep-merge {:foo {:bar 2}}
+            {:foo {:kto {:ty "ty"}}})
 
 
+; 2.24 comparing and sorting values
+(compare 5 2)
+(compare 0.5 1)
+(compare (/ 1 4) 0.25)
+(compare "brewer" "aardvark")
 
+(apply str (filter #(not= % \space) (sort "The qucik brown fox jumped over the lazy dog")))
 
+(sort > [1 4 3 2])
+(sort < [1 4 3 2])
+(sort #(< (count %1) (count %2)) ["z" "yy" "zzz" "a" "bb" "ccc"])
 
 
 
