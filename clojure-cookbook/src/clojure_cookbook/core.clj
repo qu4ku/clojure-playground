@@ -1216,6 +1216,92 @@ entry
 (sort < [1 4 3 2])
 (sort #(< (count %1) (count %2)) ["z" "yy" "zzz" "a" "bb" "ccc"])
 
+(def people [{:name "Luke" :role :author}
+             {:name "Ryan" :role :author}
+             {:name "John" :role :reviewer}
+             {:name "Travis" :role :editor}])
+
+(sort #(compare (:name %1) (:name %2)) people)
+; same as:
+(sort-by :name people)
+(sort-by :role people)
+
+; descending lexographic order
+(sort-by str #(* -1 (compare %1 %2)) (range 1 20))
+(sort-by str #(compare %1 %2) (range 1 20))
+
+; vectors are compared first by their lenght second by the resutl 
+; of applying compare to their first value
+(sort [[2 1] [1] [1 2] [1 1 1] [2]])
+
+
+; 2.25 removing duplicate elements from a collection
+
+(set [:a :a :g :a :b :g])
+
+; when the sequence is infinite or you wish to maintain ordering
+; use distinct [to return lazy seq]
+(distinct [:a :a :g :a :b :g])
+
+(defn rand-int-seq
+  "Returns an infinite sequence of ints from [0, n)"
+  [n]
+  (repeatedly #(rand-int n)))
+
+; set will take an infinite sequence and never returns
+; to limit it you need to use take
+(set (take 10 (rand-int-seq 10)))
+
+; distinct works no matter what
+(take 10 (distinct (rand-int-seq 10)))
+; calling set is two times faster though
+
+
+; 2.26 determining if a collection holds one of several values
+(some #{1 2} (range 10))
+(some #{10 20} (range 10))
+(some #{10 20 4 6} (range 10))
+
+(if (some #{nil} [1 2 nil 3])
+  :found
+  :not-found) ; problem as some returns the item if found or nil if not
+
+(if (some #{false} [1 2 false 3])
+  :found
+  :not-found) ; same
+
+(if (some nil? [nil false])
+  :found
+  :not-found)
+(if (some false? [nil false])
+  :found
+  :not-found)
+
+; to test both cases at once
+(if (some #(or (false? %)
+               (nil? %))
+          [nil false])
+  :found
+  :not-found)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
