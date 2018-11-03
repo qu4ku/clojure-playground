@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [inflections "0.13.0"]
                  [clojurewerkz/money "1.10.0"]
-                 [clj-time "0.14.4"]]
+                 [clj-time "0.14.4"]
+                 [org.clojure/core.match "0.2.0"]]
 
 
   :main ^:skip-aot clojure-cookbook.core
