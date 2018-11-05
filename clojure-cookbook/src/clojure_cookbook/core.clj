@@ -1332,19 +1332,54 @@ entry
                     :else x)))
 
 
+; 2.28 implementing custom data structures: red black trees - part ii
+; this one is not finised
+(defn- rb-tree->tree-seq
+  "Return a seq of all nodes in an red-black tree."
+  [rb-tree]
+  (tree-seq sequential? (fn [[_ left _ right]]
+                          (remove nil? [left right]))
+            rb-tree))
 
+(defn rb-tree->seq
+  "Convert a red-black tree to a seq of its values."
+  [rb-tree]
+  (map (fn [[_ _ val _]] val) (rb-tree->tree-seq rb-tree)))
 
+(rb-tree->seq (-> nil
+                  (insert-val 5)
+                  (insert-val 2)))
 
+(defn- rb-tree->tree-seq
+  "Return a seq of all nodes in an red-black tree."
+  [rb-tree]
+  (tree-seq sequential? (fn [[_ left _ right]]
+                          (remove nil? [left right]))
+            rb-tree))
 
+(defn rb-tree->seq
+  "Convert a red-black tree to a seq of its values."
+  [rb-tree]
+  (map (fn [[_ _ val _]] val) (rb-tree->tree-seq rb-tree)))
 
+(rb-tree->seq (-> nil
+                  (insert-val 5)
+                  (insert-val 2)))
 
+; 3.2 interactive doccumentation
 
+(use 'clojure.repl)
 
+; get docs
+(doc conj)
 
+; get source code
+(source reverse)
 
+; find functions with documentation matching for a gieve reg expr
+(find-doc #"defmacro")
 
+(source source)
 
-
-
-
-                  
+; without importing clojure.repl
+(clojure.repl/doc reverse)
