@@ -7,7 +7,8 @@
                  [inflections "0.13.0"]
                  [clojurewerkz/money "1.10.0"]
                  [clj-time "0.14.4"]
-                 [org.clojure/core.match "0.2.0"]]
+                 [org.clojure/core.match "0.2.0"]
+                 [org.clojure/tools.cli "0.4.1"]]
 
 
   :main ^:skip-aot clojure-cookbook.core

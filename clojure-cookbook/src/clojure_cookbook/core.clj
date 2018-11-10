@@ -1383,3 +1383,45 @@ entry
 
 ; without importing clojure.repl
 (clojure.repl/doc reverse)
+
+
+; 3.3 exploring namespaces
+
+; print loaded libraries
+(print (loaded-libs))
+
+(use 'clojure.repl)
+(dir clojure.instant)
+
+; use ns-publics to obtain a mapping of symbols to public vars in 
+; a namespace
+(ns-publics 'clojure.instant)
+
+
+; 3.4 trying a library without explicit dependencies
+; use lein try - it will grab  the most recent version if not specified
+; lein try clj-time
+; or:
+; lein try clj-time 0.5.1
+
+; lein try [io.rkn/conformity "0.2.1"] [com.datomic/datomic-free "0.8.4020.26"]
+
+
+; 3.5 running clojure programs 
+
+; 3.6 running programs from the command line
+; in any leiningen project, use lein run commnad to invoke your app
+
+; 3.7 parsing command-line arguments
+; use [org.clojure/tools.cli "0.4.1"]
+
+
+(require '[clojure.tools.cli :refer [cli]])
+
+(defn -main [& args]
+  (let [[opts args banner] (cli args
+                                ["-h" "--help" "Print this help"
+                                 :default false :flag true])]
+    (when (:help opts)
+      (println banner))))
+(-main "-h")
