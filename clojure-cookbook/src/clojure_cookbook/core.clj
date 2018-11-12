@@ -1425,3 +1425,16 @@ entry
     (when (:help opts)
       (println banner))))
 (-main "-h")
+
+
+(def app-specs [["-n" "--count" :default 5
+                                :parse-fn #(Integer. %)
+                                :assoc-fn max]
+                ["-v" "--verbose" :flag true
+                                  :default true]])
+(first (apply cli ["-n" "2" "-n" "50"] app-specs))
+
+
+(first (apply cli ["--no-verbose"] app-specs))
+
+(first (apply cli ["-n" "65"] app-specs))
