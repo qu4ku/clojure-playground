@@ -1433,8 +1433,101 @@ entry
                 ["-v" "--verbose" :flag true
                                   :default true]])
 (first (apply cli ["-n" "2" "-n" "50"] app-specs))
-
-
 (first (apply cli ["--no-verbose"] app-specs))
-
 (first (apply cli ["-n" "65"] app-specs))
+
+(def required-opts #{:port})
+(defn missing-required?
+  "Returns true if opts is misssing any of the required-opts"
+  [opts]
+  (not-every? opts required-opts))
+(defn -main [& args]
+  (let [[opts args banner] (cli args
+                                ["-h" "--help" "Print this help"
+                                 :default false :flag true]
+                                ["-p" "--port" :parse-fn #(integer. %)])]
+    (when (or (:help opts)
+              (missing-required? opts))
+      (println banner))))
+(second (apply cli ["-n" "5" "foo.txt" "bar.txt"] app-specs))
+(second (apply cli ["-n" "5" "--" "--port" "80"]))
+(second (apply cli ["-n" "5" "--" "--port" "80"] app-specs))
+
+; 3.8 creating custom project templates > skip
+
+; 3.9 building functions with polymorphic behaviour
+; the easiest way to implement runtime polymorphism is via hand-rolled
+; map-based dispatch
+(defn area
+  "Calculate the area of a shape"
+  [shape]
+  (condp = (:type shape)
+    :triangle   (* (:base shape) (:height shape) (/ 1 2))
+    :rectangle  (* (:length shape) (:width shape))))
+(area {:type :triangle :base 2 :height 4})
+(area {:type :rectangle :length 2 :width 4})
+; use defmulti and defmethod macros to define a multimethod
+(defmulti area-multi
+  "Calculate the are a shape"
+  :type)
+(defmethod area-multi :rectangle [shape]
+  (* (:length shape) (:widht shape)))
+(area-multi {:type :rectangle :length 2 :widht 4})
+(area-multi {:type :circle :radius 1}) ; error
+(defmethod area-multi :circle [shape]
+  (* (. Math PI) (:radius shape) (:radius shape)))
+(area-multi {:type :circle :radius 1})
+
+; use clojure's protocol facilities to define a protocol interface
+; and extend it with concrete implementations
+(defprotocol Shape
+  (area [s] "Calculate the area of a shape")
+  (perimeter [s] "Calcuclate the perimeter of a shape"))
+; define a concrete shape, the rectangle
+(defrecord Rectangle [length width]
+  Shape
+  (area [this] (* length width))
+  (perimeter [this] (+ (* 2 length)
+                       (* 2 width))))
+(->Rectangle 2 4)
+(area (->Rectangle 2 4))
+
+(defmulti area ; the function name for a multimethod
+  "Calcuclate the are af a shape"
+  :type) ; the dispatch function
+
+(defmulti ingest-message
+  "Ingest a message into an application"
+  (fn [app message]
+    (:priority message))
+  :default :low)
+(defmethod ingest-message :low [app message]
+  (println (str "ingesting message " message ", eventually..")))
+(defmethod ingest-message :high [app message]
+  (println (str "ingesting message " message ", now.")))
+(ingest-message {} {:type :stats :value [1 2 3]})
+(ingest-message {} {:type :heartbeat :priority :high})
+
+
+; multiple dispatch - function can be dispatched upon any number of factors
+(defmulti convert 
+  "Convert a thing from one type to another"
+  (fn [request thing]
+    [(:input request) (:output request)]))
+
+(require 'clojure.edn)
+(defmethod convert [:edn :clojure]
+  [_ str]
+  (clojure.edn/read-string str))
+
+(require 'clojure.data.json)
+(defmethod convert [:clojure :json]
+  [_ thing]
+  (clojure.data.json/write-str thing))
+
+(convert {:input :edn
+          :output :clojure}
+         "{:foo :bar}")
+(convert {:input :clojure :output :json} [:foo [:bar :baz]])
+
+[(:input {:input :clojure :output :json}) (:output {:input :clojure :output :json})]
