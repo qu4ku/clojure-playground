@@ -1531,3 +1531,42 @@ entry
 (convert {:input :clojure :output :json} [:foo [:bar :baz]])
 
 [(:input {:input :clojure :output :json}) (:output {:input :clojure :output :json})]
+
+(defprotocol Frobnozzle
+  "Basic methods for any Frobnozzle"
+  (blint [this x] "Blint the frobnozzle with x")
+  (crand [this f] [this f x] (str "Crand a frobnozzle with another "
+                                  "optionally incorporation x")))
+; once protocol is deifned, there are numerous ways to provide
+; an implementation for it: deftype, defrecodr, and reify
+
+; deftype has a similar syntax, but is not really applicable for
+; an immutable shape
+(defrecord Square [length]
+  Shape
+  (area [this] (* length length))
+  (perimeter [this] (* 4 length)))
+
+(perimeter (->Square 1))
+
+; define the area of a parallelogram without defining a record
+(area
+ (let [b 2
+       h 3]
+   (reify Shape
+     (area [this] (* b h))
+     (perimeter [this] (* 2 (+ b h))))))
+
+; 3.10 extending a built-in type
+(defprotocol Person
+  "Represents the name of a person."
+  (first-name [person])
+  (last-name [person]))
+; extend the type to the java.lang.String class:
+(extend-type String
+  Person
+  (first-name [s] (first (clojure.string/split s #" ")))
+  (last-name [s] (second (clojure.string/split s #" "))))
+
+(first-name "john")
+(last-name "john rambo")
