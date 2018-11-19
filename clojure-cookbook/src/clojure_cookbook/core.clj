@@ -1570,3 +1570,73 @@ entry
 
 (first-name "john")
 (last-name "john rambo")
+
+(defn first-word [s]
+  (first (clojure.string/split s #" ")))
+(defn second-word [s]
+  (second (clojure.string/split s #" ")))
+(extend String
+  Person
+  {:first-name first-word
+   :last-name second-word})
+
+; 3.11 decoupling consumers and producers with core.async
+(defn database-consumer
+  "Accept messages and persist them to a databese."
+  [msg]
+  (println (format "database-consumer received message %s" msg)))
+(defn sse-consumer
+  "Accept messages and pass them to web browsers via SSE."
+  [msg]
+  (println (format "sse-consumer received message %s" msg)))
+(defn messages
+  "Fetch messages from Twitter"
+  []
+  (range 4))
+(defn message-producer
+  "Produce messages and deliver them to consumers."
+  [& consumers]
+  (doseq [msg (messages)
+          consumer consumers]
+    (consumer msg)))
+(message-producer database-consumer sse-consumer)
+
+(require '[clojure.core.async :refer [chan sliding-buffer go 
+                                      go-loop timeout >! <!]])
+
+(defn database-consumer
+  "Accept messages and persist them to a database."
+  []
+  (let [in (chan (sliding-buffer 64))]
+    (go-loop [data (<! in)]
+      (when data
+        (println (format "database-consumer received data %s" data))
+        (recur (<! in))))
+    in))
+
+(defn sse-consumer
+  "Accept messages and pass them to web brwoser via SSE."
+  []
+  (let [in (chan (sliding-buffer 64))]
+    (go-loop [data (<! in)]
+      (when data
+        (println (format "sse-consumer received data %s" data))
+        (recur (<! in))))
+    in))
+      
+
+(defn messages
+  "Fetch messages from Twitter."
+  []
+  (range 4))
+
+(defn producer
+  "Produce messages and deliver them to consumers."
+  [& channels]
+  (go
+    (doseq [msg (messages)
+            out channels]
+      (<! (timeout 100))
+      (>! out msg))))
+
+(producer (database-consumer) (sse-consumer))
