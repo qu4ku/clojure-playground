@@ -1640,3 +1640,33 @@ entry
       (>! out msg))))
 
 (producer (database-consumer) (sse-consumer))
+
+(defn database-consumer
+  "Accept messages and persist them to a database."
+  []
+  (let [in (chan (sliding-buffer 64))]
+    (go-loop [data (<! in)]
+      (when data
+        (println (format "database-consumer received data %%s" data))))
+    in))
+(defn producer
+  [& channels]
+  (go
+   (doseq [msg (messages)
+           out channels]
+     (<! (timeout 100))
+     (>! out item))))
+
+; 3.12 making a parser for clojure expressions using core.match
+(require '[clojure.core.match :refer (match)])
+(defn simple-clojure-parser
+  [expr]
+  (match [expr]
+    [(var :guard symbol?)] {:variable var}
+    [(['fn [arg] body] :seq)] {:closure
+                               {:arg args
+                                :body (simple-clojure-parser body)}}
+    [([operator operand] :seq)] {:application
+                                 {:operator (simple-clojure-parser operator)
+                                  :operand (simple-clojure-parser operand)}}
+    :else (throw (Exception. (str "nvalid expression: " expr)))))
