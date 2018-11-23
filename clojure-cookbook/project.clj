@@ -10,7 +10,8 @@
                  [org.clojure/core.match "0.2.0"]
                  [org.clojure/tools.cli "0.4.1"]
                  [org.clojure/data.json "0.2.5"]
-                 [org.clojure/core.async "0.4.490"]]
+                 [org.clojure/core.async "0.4.490"]
+                 [org.clojure/core.logic "0.8.11"]]
 
 
   :main ^:skip-aot clojure-cookbook.core

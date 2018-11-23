@@ -1664,9 +1664,82 @@ entry
   (match [expr]
     [(var :guard symbol?)] {:variable var}
     [(['fn [arg] body] :seq)] {:closure
-                               {:arg args
+                               {:arg arg
                                 :body (simple-clojure-parser body)}}
     [([operator operand] :seq)] {:application
                                  {:operator (simple-clojure-parser operator)
                                   :operand (simple-clojure-parser operand)}}
     :else (throw (Exception. (str "nvalid expression: " expr)))))
+
+(simple-clojure-parser 'a)
+(simple-clojure-parser '(fn [x] x))
+(simple-clojure-parser '((fn [x] x) a))
+(simple-clojure-parser '(fn [x y] x))
+
+(defn parse-fn
+  [expr]
+  (if (and (list? expr)
+           (= (count expr) 3)
+           (= (nth expr 0) 'fn)
+           (vector? (nth expr 1))
+           (= (count (nth expr 1)) 0))
+    {:closjure {:arg (nth (nth expr 1) 0)
+                :body (simple-clojure-parser (nth expr 2))}}
+    (throw (Exception. (str "unexpected non-fn expression: " expr)))))
+
+; 3.13 querying hierarchical graphs with core.logic
+(def movie-graph
+  [
+     [:a1 :type :FilmStudio]
+     [:a1 :name "Newmarket Films"]
+     [:a1 :filmsCollection :a2]
+
+     ;; Collection of films made by Newmarket Films
+     [:a2 :type :FilmCollection]
+     [:a2 :film :a3]
+     [:a2 :film :a6]
+
+     ;; The movie "Memento"
+     [:a3 :type :Film]
+     [:a3 :name "Memento"]
+     [:a3 :cast :a4]
+
+     ;; Connects the film to its cast (actors/director/producer etc.)
+     [:a4 :type :FilmCast]
+     [:a4 :director :a5]
+
+     ;; The director of "Memento"
+     [:a5 :type :Person]
+     [:a5 :name "Christopher Nolan"]
+
+     ;; The movie "The Usual Suspects"
+     [:a6 :type :Film]
+     [:a6 :filmName "The Usual Suspects"]
+     [:a6 :cast :a7]])
+
+; in imperative model, you would likely arduously "connect the dots"
+; from node to node using filters, maps, and conditions
+; with core.logic it is possible to connect these dots using 
+; declarative logic statements
+(require '[clojure.core.logic :as cl])
+(defn directors-at
+  "Find all of the directors that have directed at a given studio"
+  [graph studio-name]
+  (cl/run* [director-name]
+    (cl/fresh [studio film-coll film cast director]
+      ; relate the original studio-name to a film collection
+      (cl/membero [studio :name studio-name] graph)
+      (cl/membero [studio :type :FilmStudio] graph)
+      (cl/membero [studio :filmsCollection film-coll] graph)
+      
+      ; relate any film collections to their individual films
+      (cl/membero [film-coll :type :FilmCollection] graph)
+      (cl/membero [film-coll :film film] graph)
+              
+      (cl/membero [cast :type :Person] graph)
+      (cl/membero [cast :director director] graph)
+      
+      (cl/membero [director :type :Person] graph)
+      (cl/membero [director :name director-name] graph))))      
+
+(directors-at movie-graph "Christopher Nolan")
