@@ -1743,3 +1743,61 @@ entry
       (cl/membero [director :name director-name] graph))))      
 
 (directors-at movie-graph "Christopher Nolan")
+
+(cl/run 1 [q]
+  (cl/== 1 q))
+
+(cl/run 1 [q]
+  (cl/== [1 2 3]
+         [1 2 q]))
+
+(cl/run 1 [q]
+  (cl/== ["foo" "bar" "baz"]
+         [q "bar" "baz"]))
+; there is no way a single value is both 1 and 2
+(cl/run 1 [q]
+  (cl/== 1 q)
+  (cl/== 2 q))
+
+(cl/run 1 [q]
+  (cl/fresh [x y z]
+    (cl/== x 1)
+    (cl/== y 2)
+    (cl/== z 3)
+    (cl/== q [x y z])))
+
+; just like clojure.core.logic/== is a relation between two forms, 
+; clojure.core.logic/membero is a relation between an element 
+; in a list and the list itself
+(cl/run 1 [q]
+  (cl/membero q [1]))
+(cl/run 1 [q]
+  (cl/membero 1 q))
+
+(cl/run 1 [q]
+  (cl/membero [1 q 3] [[1 2 3] [4 5 6] [7 8 9]]))
+
+; logic variables live for the duration of the program, making
+; it possible to use the same logic variable in multiple statements
+(let [seq-a [["foo" 1 2] ["bar" 3 4] ["baz" 5 6]]
+      seq-b [["foo" 9 8] ["bar" 7 6] ["baz" 5 4]]]
+  (cl/run 1 [q]
+    (cl/fresh [first-item middle-item last-a last-b]
+      (cl/membero [first-item middle-item last-a] seq-a)
+      (cl/membero [first-item middle-item last-b] seq-b)
+      (cl/== q [last-a last-b]))))
+
+(cl/run 1 [director-name]
+  (cl/fresh [studio-film-coll film cast director]
+    (cl/membero [studio :name "Newmarket Films"] graph)
+    (cl/membero [studio :type :FilmStudio] graph)
+    (cl/membero [studio :filmCollection film-col] graph)
+    
+    (cl/membero [film-coll :film film] graph)
+    (cl/membero [film-coll :film film] graph)
+    (cl/membero [film :type :Film] graph)
+    (cl/membero [film :cast cast] graph)
+    (cl/membero [cast :type :FilmCast] graph)
+    (cl/membero [cast :director director] graph)
+    (cl/membero [director :type :Person] graph)
+    (cl/membero [director :name director-name] graph)))
