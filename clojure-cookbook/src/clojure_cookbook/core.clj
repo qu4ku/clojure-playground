@@ -1801,3 +1801,82 @@ entry
     (cl/membero [cast :director director] graph)
     (cl/membero [director :type :Person] graph)
     (cl/membero [director :name director-name] graph)))
+
+
+; play a nursery rhyme
+(require '[overtone.live :as overtone])
+(defn note [timing pitch] {:time timing :pitch pitch})
+
+(def melody
+  (let [pitches
+        [0 0 0 1 2
+         ; row, row, row, your beat,
+         2 1 2 3 4
+         ; gently down the stream,
+         7 7 7 4 4 4 2 2 2 0 0 0
+         ; take 4 (repeat "rerrily"))
+         4 3 2 1 0]
+         ; life is but a dream!
+        durations
+          [1 1 2/3 1/3 1
+           2/3 1/3 2/3 1/3 2
+           1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
+           2/3 1/3 2/3 1/3 2]
+        times (reductions + 0 durations)]
+    (map note times pitches)))
+; convert the piece into a specific key by transforming each note's
+; pitch using a function that represents the key
+(defn where [k f notes] (map #(update-in % [k] f) notes))
+(defn scale [intervals] (fn [degree] (apply + (take degree intervals))))
+(def major (scale [2 2 1 2 2 2 1]))
+(defn from [n] (partial + n))
+(def A (from 69))
+(->> melody
+     (where :pitch (comp A major)))
+; convert the piece into a specific tempo by transforming each note's 
+; time using a function that represents the tempo
+(defn bpm [beats] (fn [beat] (/ (* beat 40 1000) beats)))
+(->> melody
+     (where :time (comp (from (overtone/now)) (bpm 90))))
+; define an instrument and use it to play the melody
+(require '[overtone.live :refer [definst line sin-osc FREE midi->hz at]])
+(definst beep [freq 440]
+  (let [envelope (line 1 0 0.5 :action FREE)]
+    (* envelope (sin-osc freq))))
+(defn play [notes]
+  (doseq [{ms :time midi :pitch} notes]
+    (at ms (beep (midi->hz midi)))))
+(->> melody
+     (where :pitch (comp A major))
+     (where :time (comp (from (overtone/now)) (bpm 90)))
+     play)
+(defn round [beats notes]
+  (concat notes (->> notes (where :time (from beats)))))
+(->> melody
+     (round 4)
+     (where :pitch (comp A major))
+     (where :time (comp (from (overtone/now)) (bpm 90)))
+     play)
+
+
+; CHAPTER 4. Local I/O
+
+; 4.1 Writing to STDOUT and STDERR
+; by default, the print and println functions will print content
+; passed them to STDOUT
+(println "This text will be printed to STDOUT.")
+(do 
+  (print "a")
+  (print "b"))
+
+; change the binding of *out* to *err* to print STDERR insted of 
+; STDOUT
+(binding [*out* *err*]
+  (println "Blew up!"))
+
+; create a writer to file foo.txt and print to it.
+(def foo-file (clojure.java.io/writer "data/foo.txt"))
+(binding [*out* foo-file]
+  (println "Foo, bar."))
+; close the file.
+(.close foo-file)
