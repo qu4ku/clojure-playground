@@ -1818,10 +1818,10 @@ entry
          4 3 2 1 0]
          ; life is but a dream!
         durations
-          [1 1 2/3 1/3 1
-           2/3 1/3 2/3 1/3 2
-           1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
-           2/3 1/3 2/3 1/3 2]
+        [1 1 2/3 1/3 1
+         2/3 1/3 2/3 1/3 2
+         1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3 1/3
+         2/3 1/3 2/3 1/3 2]
         times (reductions + 0 durations)]
     (map note times pitches)))
 ; convert the piece into a specific key by transforming each note's
@@ -1880,3 +1880,147 @@ entry
   (println "Foo, bar."))
 ; close the file.
 (.close foo-file)
+
+
+; 4.2 reading a single keystroke from the console
+(ns keystroke.core
+  (:import [jline.console ConsoleReader]))
+
+(defn show-keystroke []
+  (print "Enter a keystroke: ")
+  (flush)
+  (let [cr (ConsoleReader.)
+        keyint (.readCharacter cr)]
+    (println (format "Got %d ('%c')!" keyint (char keyint)))))
+
+; can't execute this in a repl 
+; need to use lein trampoline repl
+; lein trampoline is necessary because, by default, a Leiningen
+; repl actually runs the repl and its associated console I/O in a 
+; separate JVM process form your application code
+
+
+; 4.3 executing system commands
+(require '[clj-commons-exec :as exec])
+(def p (exec/sh ["date"]))
+(deref p)
+
+; if your command requires options or args, simply append them to 
+; the command vector as strings
+@(exec/sh ["ls" "-l" "/etc/passwd"])
+@(exec/sh ["ls" "-l"])
+
+(def results (exec/sh-pipe ["cat"] ["wc" "-w"] {:in "Hello, world"}))
+results
+
+(println (:out @(exec/sh ["ls"] {:dir "/"})))
+(println (:out @(exec/sh ["ls" "-la"] {:dir "/"})))
+
+@(exec/sh ["printenv" "HOME"])
+@(exec/sh ["printenv" "HOME] {:env {}}"])
+@(exec/sh ["printenv" "HOME"] {:env {"HOME" "/Users/jeff"}})
+
+; for long-running comments 
+(def p (exec/sh ["sleep" "5"]))
+(realized? p)
+(realized? p)
+
+
+; 4.4 accessing resource files
+; put resource files in resources/ directory
+(require '[clojure.java.io :as io]
+         '[clojure.edn :as edn])
+(->> "people.edn"
+     io/resource
+     slurp
+     edn/read-string
+     (map :language))
+
+; you can specify different resources' path in ploject.clj
+; :resource-paths ["my-resources" "src/other-resources"]
+
+
+; 4.5 copying files
+(clojure.java.io/copy
+ (clojure.java.io/file "./file-to-copy.txt")
+ (clojure.java.io/file "./my-new-copy.txt"))
+
+; it doesn't have to be the file
+(clojure.java.io/copy
+ "some text"
+ (clojure.java.io/file "./str-test.txt"))
+
+(clojure.java.io/copy "some text"
+                      (clojure.java.io/file ".str-test-txt")
+                      :encoding "UTF-8")
+
+; if file exists it will be overwritten
+(defn safe-copy [source-path destination-path & opts]
+  (let [source (clojure.java.io/file source-path)
+        destination (clojure.java.io/file destination-path)
+        options (merge {:overwrite false} (apply hash-map opts))]
+    (if (and (.exists source)
+             (or (:overwrite options)
+                 (= false (.exists destination))))
+      (try
+        (= nil (clojure.java.io/copy source destination))
+        (catch Exception e (str "exception: " (.getMessage e))))
+      false)))
+
+(safe-copy "./file-to-copy.txt" "./my-new-copy.txt")
+(safe-copy "./file-to.copy.txt" "./my-new-copy.txt" :overwrite true)
+
+(with-open [reader (clojure.java.io/reader "file-to-copy.txt")
+            writer (clojure.java.io/writer "my-new-copy.txt")]
+  (clojure.java.io/copy reader writer))
+
+
+; 4.6 deleting files or directories
+(clojure.java.io/delete-file "./file-to-delete.txt")
+
+; if the file could not be deleted you coud add flag for that eventuality 
+(clojure.java.io/delete-file "./file-that-does-not-exists.txt" true)
+
+(try 
+  (clojure.java.io/delete-file "./file-not-exists.txt")
+  (catch Exception e (str "exception :" (.getMessage e))))
+
+; reeturns true if deleted and false if not
+(defn safe-delete [file-path]
+  (if (.exists (clojure.java.io/file file-path))
+    (try 
+      (clojure.java.io/delete-file file-path)
+      (catch Exception e (str "exception: " (.getMessage e))))
+    false))
+
+(clojure.java.io/delete-file "./dir-to-delete")
+
+(defn delete-directory [direcotry-path]
+  (let [directory-contents (file-seq (clojure.java.io/file directory-path))
+        files-to-delete (filter #(.isFile %) directory-contents)]
+    (doseq [file files-to-delete]
+      (safe-delete (.getPath file)))
+    (safe-delete direcotry-path)))
+(delete-direcotry "./dir-to-delete")
+
+
+; 4.7 listing files in a directory
+(def tng-dir (file-seq (clojure.java.io/file "./next-gen")))
+(def tng-dir (file-seq (clojure.java.io/file "./")))
+tng-dir
+
+(defn only-files
+  "Filter a seq of files/dirs by the .isFile property of java.io.File"
+  [file-s]
+  (filter #(.isFile %) file-s))
+  
+(only-files tng-dir)
+
+(defn names
+  "return .getName property of a seq of files"
+  [file-s]
+  (map #(.getName %) file-s))
+
+(-> tng-dir
+    only-files
+    names)

@@ -12,7 +12,9 @@
                  [org.clojure/data.json "0.2.5"]
                  [org.clojure/core.async "0.4.490"]
                  [org.clojure/core.logic "0.8.11"]
-                 [overtone "0.10.3"]]
+                 [overtone "0.10.3"]
+                 [jline "2.11"]
+                 [org.clojars.hozumi/clj-commons-exec "1.2.0"]]
 
 
   :main ^:skip-aot clojure-cookbook.core
