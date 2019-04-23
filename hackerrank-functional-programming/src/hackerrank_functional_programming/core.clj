@@ -118,3 +118,19 @@ fst
 (if (some #(= % \d) [\k \b])
   (println "true")
   (println "false"))
+
+
+
+; Remove Duplicates)
+(def input (read-line))
+
+(defn ans [input ans]
+  (if (= 0 (count input))
+    (println (apply str ans))
+    (let [char (first input)
+          rest (rest input)]
+      (if (some #{char} ans)
+        (recur rest ans)
+        (recur rest (conj ans char))))))
+
+(ans input [])

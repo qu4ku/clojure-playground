@@ -3,35 +3,31 @@
   (:require [proto-repl])
   (:gen-class))
 
-; (defn -main
-;   "I don't do a whole lot ... yet."
-;   [& args]
-;   (def aLong 15)
-;   (nil? aLong))
-;
-; (pos? 15)
-; (neg? 15)
-; (integer? 15)
-; (odd? 15)
-; (even? 15)
-; (float? 15)
-; (zero? 0)
+(type false)
+(pos? 15)
+(neg? 15)
+(integer? 15)
+(odd? 15)
+(even? 15)
+(float? 15)
+(zero? 0)
 
-; (defn -main
-;   [& args]
-;   (def aLong 15)
-;   (def someVariable "h")
-;   (def aDoubleSec 1.234)
-;   (format "This is a string %s" someVariable)
-;   (format "5 spaces and %5d" aLong)
-;   (format "Leading zeros %04d" aLong)
-;   (format "%-4d left justify" aLong)
-;   (format "3 decimals %.3f" aDoubleSec))
+(def a_string "Hello")
+(def a_double 1.234)
+(def a_long 15)
+(format "This is a string %s" a_string)
+(format "5 spaces and %5d" a_long)
+(format "%-4d left justified" a_long)
+(format "2 decimals: %.2f" a_double)
+(format "Leading zeros: %04d" a_long)
 
-
-(defn -main
-  [& args]
-  (def str1 "This is my 2nd string")
-  (def str2 "")
-  (str/blank? str1))
-  ; (str/blank? str2))
+(def str1 "this is my 2nd string")
+(str/blank? str1)
+(str/includes? str1 "my")
+(str/index-of str1 "my")
+(str/split str1 #" ")
+(str/split str1 #"\d")
+(str/join " " ["the" "big" "cheese"])
+(str/replace "I am 43" #"43" "20")
+(str/upper-case str1)
+(str/lower-case str1)
