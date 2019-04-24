@@ -145,6 +145,72 @@
 
 
 ; decision makers
+(= 4 5)
+(not= 3 4)
+(and true false)
+(or true false)
+(not true)
+  
+(defn can-vote [age]
+  (if (>= age 18)
+    (println "you can vote")
+    (println "you can't vote")))
 
-  
-  
+(can-vote 17)
+
+(defn can-do-more [age]
+  (if (>= age 18)
+    (do (println "you can drive")
+        (println "youo can vote"))
+    (println "you can't vote")))
+(can-do-more 20)
+
+(defn what-grade [n]
+  (cond
+    (< n 5)  "preschool"
+    (= n 5)  "kindergarden"
+    (and (> n 5) (<= n 18)) (format "go to grade %d" (- n 5))))
+(what-grade 10)
+(what-grade 4)
+(map what-grade [5 10 17])
+
+(defn testfun [& args]
+  (do
+    (println (type args))
+    (println (class args))
+    (println args)))
+
+(defn testfun-wargs [args]
+  (do
+    (println (type args))
+    (println (class args))
+    (println args)))
+(testfun 1 2)
+(testfun-wargs 1 2) ; wrong number of args
+
+
+; loops
+(defn one-to-x [x]
+  (def i (atom 1))
+  (while (<= @i x)
+    (do
+      (println @i)
+      (swap! i inc))))
+(one-to-x 10)
+
+(defn double-to-x [x]
+  (dotimes [n x]
+    (println (* n 2))))
+(double-to-x 4)
+
+(defn tripple-to-x [x y]
+  (loop [n x]
+    (when (< n y)
+      (println (* n 3))
+      (recur (inc n)))))
+(tripple-to-x 3 10)
+
+(defn print-list [& nums]
+  (doseq [x nums]
+    (println x)))
+(print-list 2 3 4)
