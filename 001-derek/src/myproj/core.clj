@@ -2,6 +2,7 @@
   (:require [clojure.string :as str])
   (:require [proto-repl])
   (:gen-class))
+(use 'clojure.java.io)
 
 (type false)
 (pos? 15)
@@ -47,6 +48,7 @@
 (contains? (set '(3 4)) 3)
 (disj (set '(3 4)) 3)
 
+
 ; vectors
 (vector 3 2)
 (get (vector 3 2) 1)
@@ -54,6 +56,7 @@
 (cons 1 (vector 3 2))
 (pop (vector 3 2))
 (subvec (vector 2 3 4 5) 0 2)
+
 
 ; maps
 (hash-map "Name" "Derek" "Age" 42)
@@ -65,6 +68,7 @@
 (vals (hash-map "name" "derek" "age" 42))
 (merge-with + (hash-map "some" "thing") (hash-map "name" "derek" "age" 42))
 (merge (hash-map "some" "thing") (hash-map "name" "derek" "age" 42))
+
 
 ; atoms
 (defn atom-x [x]
@@ -79,6 +83,7 @@
   (println "Increment x" @atom_x))
 
 (atom-x 5)
+
 
 ; agent
 (defn agent-x []
@@ -214,3 +219,82 @@
   (doseq [x nums]
     (println x)))
 (print-list 2 3 4)
+
+
+; io
+(defn write-to-file
+  [file text]
+  (with-open [wrt (writer file)]
+    (.write wrt text)))
+(write-to-file "test.txt" "this is a test")
+
+(defn read-from-file [file]
+  (try
+    (println slurp file)
+    (catch Exception e (println "error :" (.getMessage e)))))
+(println (read-from-file "test.txt"))
+
+
+(defn append-to-file [file text]
+  (with-open [wrtr (writer file :append true)]
+    (.write wrtr text)))
+    
+(defn read-line-from-file [file]
+  (with-open [rdr (reader file)]
+    (doseq [line (line-seq rdr)]
+      (println line))))
+(read-line-from-file "test.txt")
+
+
+; desructuring 
+(defn destruct []
+  (def vec_vals [1 2 3 4])
+  (let [[one two & the-rest] vec_vals]
+    (map println [one two the-rest])))
+(destruct)
+
+; struct maps
+(defn struct-map-ex []
+  (defstruct Customer :Name :Phone)
+  (def customer_1 (struct Customer "Doug" 33344555834))
+  (def customer_2 (struct-map Customer :Name "Sally" :Phone 555884))
+
+  (println customer_1)
+  (println (:Name customer_2)))
+(struct-map-ex)
+
+
+; functions
+(map (fn [x] (* x x)) (range 1 10))
+(map #(* % %) (range 1 10))
+(#(* %1 %2) 1 2)
+
+(defn custom-multiplier [mult-by]
+  #(* % mult-by))
+(def mult-by-3 (custom-multiplier 3))
+(mult-by-3 4)
+
+
+; filters
+(take 2 [1 2 3])
+(drop 1 [1 2 3])
+(take-while neg? [-1 0 1])
+(drop-while neg? [-1 0 1])
+(filter #(> % 0) [-1 0 1])
+
+
+; macros
+(defmacro discount
+  ([cond dis1 dis2]
+   (list 'if cond dis1 dis2)))
+(discount (> 25 65) (println "10% off")
+          (println "full price"))
+
+(defmacro regular-math
+  [calc]
+  (list (second calc) (first calc) (nth calc 2)))
+(regular-math (2 + 5))
+
+(defmacro do-more
+  [cond & body]
+  (list 'if cond (cons 'do body)))
