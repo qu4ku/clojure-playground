@@ -1,6 +1,8 @@
-(ns hackerrank-functional-programming.core
+(ns hackerrank.core
   (:gen-class))
+  
 
+  
 ; Hello World N Times
 (defn hello_word_n_times
   [n]
@@ -82,7 +84,7 @@
         fst (take-nth 2 s)
         scd (take-nth 2 (rest s))]
     (println (clojure.string/join "" (flatten (map vector scd fst))))
-  
+    
 
     (def string (read-line))))
 
@@ -134,3 +136,53 @@ fst
         (recur rest (conj ans char))))))
 
 (ans input [])
+
+
+; Functions or not
+; https://www.hackerrank.com/challenges/functions-or-not/problem
+
+(require '[clojure.string :as str])
+(def input "2  
+  3  
+  1 1  
+  2 2  
+  3 3  
+  4
+  1 2
+  2 4
+  3 6  
+  4 8  ")
+
+(defn read-input [input]
+  (map str/trim (str/split input #"\n")))
+
+(read-input input)
+
+(def test-case [[1 2] [3 4] [5 6]])
+
+(defn is-function [list]
+  (def new-list [atom []])
+  (doseq [pair list]
+    (swap! new-list (conj new-list (/ (get pair 0) (get pair 1)))))
+  new-list)
+(is-function test-case)
+
+
+(defn log [x]
+    (println x)
+    x)
+
+(log (+ 1 1))
+
+(defn division [line]
+    (do 
+        (println line)
+        (let [x (Integer/parseInt (get (clojure.string/split line #" ") 0))]
+            y (Integer/parseInt (get (clojure.string/split line #" ") 1))
+            (log (double (/ x y))))))
+(division "1 2")
+
+(defn read_problem [n]
+    let [arr []]
+    (deseq [n_itr n]
+        let [n_arr]))
