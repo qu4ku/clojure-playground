@@ -1,6 +1,18 @@
 (ns brainwill-the-clojure-lang.core
   (:gen-class))
 
+(def char 'H')
+(class char)
+(println char)
+(class 'H')
+(class "H")
+(class "HH")
+
+(defn check-class [xs]
+  (doseq [x xs]
+    (println (str x ": " (class x)))))
+(check-class ["k" 'k' :foo 4 4.5 '(1 2 3) [1 2 3] {:k 2 :w 3}])
+
 
 ; factorial
 (defn factorial [n]
