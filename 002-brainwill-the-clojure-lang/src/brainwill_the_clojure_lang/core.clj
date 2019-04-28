@@ -13,6 +13,63 @@
     (println (str x ": " (class x)))))
 (check-class ["k" 'k' :foo 4 4.5 '(1 2 3) [1 2 3] {:k 2 :w 3}])
 
+(print "te" "st")
+(print "te")
+
+(loop [x 2 y []]
+  (if (< x 5)
+    (recur
+      (inc x)
+      (conj y (fn [] (println x))))
+    y))
+
+(conj ((fn [& args] (println args)) 3) 15) ; test
+
+; quote
+(foo (bar 7 4)) ; invokes foo with the bar resolved
+(foo (quote (bar 7 4))) ; invokes foo with a list of the symbol bar and the values 7 and 4
+(foo '(bar 7 4))
+
+; exceptions
+(throw exception)
+(try body catch-clauses)
+(catch class exception-binding body)
+  
+(try 
+  (foo)
+  (baz)
+  (catch BadThing alice
+    (bar alice))
+  (catch OtherBadThing fred
+    (carol fred)))
+(finally
+  (bob))
+
+; var
+(var symbol)
+
+foo/bar ; returns the value mapped to bar in the namespace foo
+(var foo/bar) ; returns the var mapped to bar in the namespace foo
+
+; new special form 
+(new class arguments)
+(new java.io.File "myfile.dat") ; returns new instance of java.io.File by
+                                ; invoking its constructor with the string as argument
+(. class field) ; returns value of a static field of the class
+(. java.lang.Math PI) ; returns value of static field PI of the java.lang.Math class
+(. foo bar) ; return field bar of instance foo
+(. (ack) bar) ; return field bar of instance returned by (ack)
+(. class (method arguments)) ; invoke a static method
+(. class (method arguments)) ; invoke an instance method
+(. java.lang.Math (atan 5))
+(. foo (bar)) ; invoke method bar of instance foo with no arguments
+
+; the set! special form
+; assigns value of an expression to the field of an instance or class specified by a dot form
+(set! dot-form expression)
+(set! (. java.lang.Math PI) 3) ; assign 3 to the static field PI of java.lang.Math class
+(set! (. foo bar) 3) ; assign 3 to the field bar of the instance foo
+
 
 ; factorial
 (defn factorial [n]
