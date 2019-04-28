@@ -162,29 +162,37 @@ fst
       (vector x y))
     (Integer/parseInt (str/trim line))))
 
-(defn pair-division [xs]
-  (try
-    (/ (get xs 0) (get xs 1))
-    (catch Exception e
-      nil)))
-
-(defn is-function? [xs]
-  (if (apply = (map pair-division xs))
-    (println "YES")
-    (println "NO")))
-
 (def input-int (map str-to-int (str/split input #"\n")))
 
 (def n-cases (first input-int))
 (def data (rest input-int))
 
+(defn is-function? [xs ans]
+  (if (empty? xs)
+    (if (and ans)
+      (println "YES")
+      (println "NO"))
+    (let [x (first (first xs))
+          is_good (apply = (filter #(= x (get % 0)) xs))]
+      (recur (rest xs) (conj ans is_good)))))
+        
+          
+(is-function? [[1 2] [1 3] [2 2] [2 2]] [])
+
+
 (defn solve [data]
   (if-not (empty? data)
     (let [n (first data)
-          case-data (take n (rest data))]
-      (is-function? case-data)
+          case-data (take n (rest data))
+          x (first (first case-data))]
+      (is-function? x case-data)
       (recur (subvec (vec data) (+ n 1))))))
 
 (solve data)
+
+
+
+
        
+
           
