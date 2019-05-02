@@ -226,5 +226,29 @@
 
 ; knowledge - unrelated
 ((comp #(* % %) -) 6 3)
-
 ((comp #(* 0.01 %) *) 1000 20)
+
+
+;; The Sums of Powers
+https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers/problem
+
+(require '[clojure.string :as str])
+
+(defn same [s]
+  (def acc (atom 1))
+  (let [char (first s)]
+    (while (= char (get s @acc))
+      (swap! acc inc)))
+  @acc)
+
+(defn solve [s ans]
+  (if (empty? s)
+    (println ans)
+    (let [n (same s)
+          new (str/join "" (str (first s) 
+                                (if (> n 1) (str n) "")))
+          new-ans (apply str ans new)
+          rest (str/join "" (drop n s))]
+      (recur rest new-ans))))
+
+(solve "kaaamm" "")
