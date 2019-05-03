@@ -252,3 +252,21 @@ https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers/
       (recur rest new-ans))))
 
 (solve "kaaamm" "")
+
+
+; second solution - regex
+(def s "kaammmmmil")
+(re-seq #"\w" s)
+
+(defn make-seq [s]
+  (map #(vector (second %) (count (first %))) (re-seq #"(.)\1*" s)))
+
+(defn solve [s]
+  (str/join "" (map #(if (= 1 (get % 1))
+                       (get % 0)
+                       (str/join "" (str (get % 0) (get % 1)))) (make-seq s))))
+(println (solve s))
+
+
+
+  
