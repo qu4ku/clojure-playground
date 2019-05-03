@@ -267,6 +267,50 @@ https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers/
                        (str/join "" (str (get % 0) (get % 1)))) (make-seq s))))
 (println (solve s))
 
+;; Rotate String 
+;; https://www.hackerrank.com/challenges/rotate-string/problem
+(require '[clojure.string :as str])
 
+(defn rotate [s n ans]
+  (if (= 0 n)
+    (println (str/join " " ans))
+    (let [rotated (str/join "" (concat (rest s) [(first s)]))
+          n (dec n)
+          n-ans (conj ans rotated)]
+      (recur rotated n n-ans))))
 
-  
+; with read-line
+(doseq [_ (range (Integer/parseInt (read-line)))]
+  (let [s (read-line)
+        n (count s)]
+    (rotate s n [])))
+
+; knowledge from solutions:
+
+; intead of doseq
+(dotimes [_ 3]
+  (println _))
+      
+; flatten
+(apply str (flatten [["ko" "rwa"] ["twoja" "mac"]]))
+
+; unpacking
+(let [[x y] (clojure.string/split "kurua peter" #" ")]
+  (println x))
+
+; doall
+; nothing is printed as map returns lazy seq
+(map println [1 2 3])
+; vs
+(doall (map println [1 2 3]))
+
+; for 
+(for [i (range 10)]
+  (for [j (range 10)]
+    (println (str i " " j))))
+
+; cycle
+(take 10 (cycle "kam"))
+
+(->> (cycle "kam")
+ (drop 3))
