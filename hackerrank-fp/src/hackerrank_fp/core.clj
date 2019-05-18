@@ -313,4 +313,26 @@ https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers/
 (take 10 (cycle "kam"))
 
 (->> (cycle "kam")
- (drop 3))
+ (drop 8)
+ (take 3)
+ (clojure.string/join ""))
+
+; iterate 
+; (iterate f x) 
+; returns a lazy seq of x, (f x), (f (f x))
+(take 5 (iterate inc 5))
+(take 5 (iterate #(* % 10) 1))
+(take 10 (iterate #(* % 1.02) 1000))
+
+(defn compound [start-num n-cycles percent]
+  (println (format "%d pln na %.2f procent przy %d cyklach" start-num percent n-cycles))
+  (apply println (map int (take n-cycles (iterate #(* % percent) start-num)))))
+(compound 100 120 1.06)
+
+(apply vector (repeatedly 3 #(rand-int 5)))
+
+(def amap {:page {:title "this is title"}})
+(:page amap)
+(get amap :page)
+(get-in amap [:page :title])
+(assoc-in amap [:page :title] "new title")
