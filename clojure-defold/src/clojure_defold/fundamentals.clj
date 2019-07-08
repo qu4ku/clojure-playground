@@ -41,3 +41,42 @@ false
 
 (palindrome? "kamil")
 (palindrome? "anna")
+
+
+(= ["hello" 2 3] [(str "hell" "o") 2 3])
+
+(contains? #{"a" "b" "hello"}
+           (str "hell" "o"))
+
+(if (= "hello" (str "hell" "o"))
+  "YES")
+
+(or false true false)
+(and true true false)
+(and true true true)
+
+(if (= 1 1)
+  (do 
+    (println "log no")
+    (println "log noo")))
+
+(when (= 1 1)
+  (println "log no")
+  (println "log noo"))
+
+(defn acceptable-number? [n]
+  (if (or (odd? n)
+          (and (even? n)
+               (< 10 n)))
+    :acceptable
+    :not-acceptable))
+
+;; implement method on the interface
+(Thread/setDefaultUncaughtExceptionHandler
+ (reify Thread$UncaughtExceptionHandler
+   (uncaughtException [this thread throwable]
+      (println (.getMessage throwable)))))
+
+(proxy [KeyAdapter] []
+  (keyPressed [event]
+    (println "KeyPressed" this (.getKeyCode event))))
