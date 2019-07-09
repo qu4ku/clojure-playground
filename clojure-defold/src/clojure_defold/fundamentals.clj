@@ -77,6 +77,6 @@ false
    (uncaughtException [this thread throwable]
       (println (.getMessage throwable)))))
 
-(proxy [KeyAdapter] []
-  (keyPressed [event]
-    (println "KeyPressed" this (.getKeyCode event))))
+; (proxy [KeyAdapter] []
+;   (keyPressed [event]
+;     (println "KeyPressed" this (.getKeyCode event))))
