@@ -73,9 +73,26 @@
 
 ;; -------------------------
 ;; Components
+; (defn comment-list []
+;   [:div.commentList
+;    "Hello, world! I am a CommentList"])
+
+(defn comment-item [author & children]
+  (into [:div.comment
+         [:h2.commentAuthor author]]
+        children))
+
+(defn comment-item [first-comp & rest-comp]
+  (let [this (reagent/current-component)]
+    [:div 
+     [:p "The 'props' propertity: " (str (reagent/props this))]
+     [:p "The first component: " (str first-comp)]
+     [:p "The children component: " (str (reagent/children this))]]))
+
 (defn comment-list []
-  [:div.commentList
-   "Hello, world! I am a CommentList"])
+  [:div.commentList []
+   [comment-item "Pete Hunt" "This is one comment"]
+   [comment-item "Jordan Walke" "This is *another* comment"]])
 
 (defn comment-form []
   [:div.commentForm
@@ -86,6 +103,10 @@
      [:h1 "Comments"]
      [comment-list]
      [comment-form]])
+
+
+
+
 ;; -------------------------
 ;; Page mounting component
 
