@@ -73,26 +73,19 @@
 
 ;; -------------------------
 ;; Components
-; (defn comment-list []
-;   [:div.commentList
-;    "Hello, world! I am a CommentList"])
+
+(def data [{:author "Pete Hunt", :text "This is one comment"}
+           {:author "Jordan Walke", :text "This is *another* comment"}])
 
 (defn comment-item [author & children]
   (into [:div.comment
          [:h2.commentAuthor author]]
         children))
 
-(defn comment-item [first-comp & rest-comp]
-  (let [this (reagent/current-component)]
-    [:div 
-     [:p "The 'props' propertity: " (str (reagent/props this))]
-     [:p "The first component: " (str first-comp)]
-     [:p "The children component: " (str (reagent/children this))]]))
-
-(defn comment-list []
-  [:div.commentList []
-   [comment-item "Pete Hunt" "This is one comment"]
-   [comment-item "Jordan Walke" "This is *another* comment"]])
+(defn comment-list [data]
+  [:div.commentList
+   (for [comment data]
+     [comment-item (:author comment) (:text comment)])])
 
 (defn comment-form []
   [:div.commentForm
@@ -101,10 +94,8 @@
 (defn comment-box []
   [:div.commentBox
      [:h1 "Comments"]
-     [comment-list]
+     [comment-list data]
      [comment-form]])
-
-
 
 
 ;; -------------------------
@@ -126,7 +117,7 @@
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [comment-box] (.getElementById js/document "app")))
+  (reagent/render [comment-box data] (.getElementById js/document "app")))
 
 (defn init! []
   (clerk/initialize!)
