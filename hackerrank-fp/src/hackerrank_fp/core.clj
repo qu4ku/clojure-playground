@@ -327,7 +327,9 @@ https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers/
 (defn compound [start-num n-cycles percent]
   (println (format "%d pln na %.2f procent przy %d cyklach" start-num percent n-cycles))
   (apply println (map int (take n-cycles (iterate #(* % percent) start-num)))))
-(compound 100 120 1.06)
+(compound 10 20 1.195)
+(compound 100 20 1.195)
+
 
 (apply vector (repeatedly 3 #(rand-int 5)))
 
