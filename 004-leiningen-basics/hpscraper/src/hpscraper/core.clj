@@ -20,3 +20,5 @@
   (try
     (print-hn-titles (get-body hn-link))
     (catch Exception e (str "caught exception: " (.getMessage e)))))
+
+; (-main)
