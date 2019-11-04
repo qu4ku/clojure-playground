@@ -1,5 +1,5 @@
 ; https://www.hackerrank.com/challenges/fibonacci-fp/problem
-; wip: good but with timout
+; wip: one test error
 
 (ns hackerrank-fp.fibonacci)
 
@@ -16,18 +16,6 @@
         (recur n (dec counter) (conj table (reduce +' (take-last 2 table))))))))
 (def fibs (generate-fib 10000 10000 [0 1]))
 
-(defn generate-fibs2 [n]
-  (let [acc (atom [0 1])]
-    (doseq [_(range n)]
-      (swap! acc conj (reduce +' (take-last 2 acc))))
-    acc))
-(generate-fibs2 3)
-
-(defn ans2 [n]
-  (let [n (Integer/parseInt n)
-        fibn (get fibs n)
-        ans (int (mod fibn 100000007))]
-    ans))
 
 (defn fib [n counter table]
   (if (= n 0) 0
@@ -41,11 +29,31 @@
         ans (int (mod fibn 100000007))]
     ans))
 
+(ans "4000")
+
 
 (def n (Integer/parseInt (read-line)))
 (doseq [_ (range n)]
   (println (ans (read-line))))
 
+
+; 2nd
+(defn generate-fibs2 [n]
+  (let [acc (atom [0 1])]
+    (doseq [_(range (- n 2))]
+      (let [x (reduce +' (take-last 2 @acc))]
+        (swap! acc conj x)))
+    @acc))
+
+(generate-fibs2 10000)
+(time (generate-fibs2 10000))
+(time (generate-fib 10000 10000 [0 1]))
+
+(defn ans2 [n]
+  (let [n (Integer/parseInt n)
+        fibn (get fibs n)
+        ans (int (mod fibn 100000007))]
+    ans))
 
 ; tests
 (do
@@ -70,3 +78,5 @@
 (reduce + (take-last 2 [2 3 4]))
 
 (take-last 2 [2 3 4])
+
+(time (= 218922995834555169026 (fib 99 99 [0 1])))
