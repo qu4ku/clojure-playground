@@ -1,9 +1,0 @@
-(ns simple-hiccup.my-view
-  (:use [hiccup.page] 
-        [hiccup.element]))
-
-(defn home-page []
-  (html5
-    [:html 
-      [:head]
-      [:body "the home page"]]))
