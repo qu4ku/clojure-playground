@@ -14,7 +14,9 @@
 
 ; compact
 (dotimes [t (read)]
-  (println "test"))
+  (let [n (read)]
+    (println (/ (* n (- (* 3 n) 1))2))))
+
 
 ; solutions knowledge
 (dotimes [t 4]
