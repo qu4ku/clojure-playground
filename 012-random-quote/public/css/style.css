@@ -1,0 +1,37 @@
+/* some style; skipping this */
+body {
+   background-color: orange;
+   font-family: monospace;
+   margin: 50px;
+}
+
+h1 {
+  color: white;
+  font-size: 32px;
+}
+
+.quote-content {
+  font-size: 60px;
+}
+.quote-author {
+  font-size: 16px;
+  text-transform: capitalize;
+  color: white;
+}
+
+button {
+  margin-top: 30px;
+  display: block;
+  padding: 5px;
+  
+}
+
+a:visited, a:active, a:focus {
+  color: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: maroon;
+  text-decoration: underline;
+}
