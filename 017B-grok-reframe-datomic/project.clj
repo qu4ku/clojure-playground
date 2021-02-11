@@ -8,7 +8,8 @@
                  [org.postgresql/postgresql "9.3-1102-jdbc41"]
                  [http-kit "2.4.0"]
                  [metosin/reitit "0.5.5"]
-                 [proto-repl "0.3.1"]]
+                 [proto-repl "0.3.1"]
+                 [yogthos/config "1.1.7"]]
   :main ^:skip-aot grok.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
