@@ -10,7 +10,10 @@
                  [metosin/reitit "0.5.5"]
                  [proto-repl "0.3.1"]
                  [yogthos/config "1.1.7"]]
+
   :main ^:skip-aot grok.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
-                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
+             :prod {:resource-paths ["config/prod"]}
+             :dev  {:resource-paths ["config/dev"]}})

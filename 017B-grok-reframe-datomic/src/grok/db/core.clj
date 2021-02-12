@@ -3,18 +3,16 @@
             [config.core :refer [env]]
             [grok.db.schema :refer [schema]]))
 
-(keys env)
-
-(def database-uri "datomic:mem://foo")
 
 (defn create-conn [db-uri]
-  (d/create-database db-uri)
-  (let [conn (d/connect db-uri)]
-    conn))
+  (when db-uri
+    (d/create-database db-uri)
+    (let [conn (d/connect db-uri)]
+      conn)))
 
 
 ;; Conn
-(def conn (create-conn database-uri))
+(def conn (create-conn (:database-uri env)))
 
 ;; Schema transaction
 (comment

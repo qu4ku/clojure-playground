@@ -1,1 +1,2 @@
-{:database-uri "test"}
+{:database-uri "datomic:mem://foo"
+ :port 8080}
