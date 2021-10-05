@@ -9,7 +9,7 @@
   (boolean (some #{n} xs)))
 
 (defn compSame [a b]
-  (if (any empty? [a b])
+  (if (some empty? [a b])
     false
     (every? true? (map
                     #(is-in? (* % %) b)
