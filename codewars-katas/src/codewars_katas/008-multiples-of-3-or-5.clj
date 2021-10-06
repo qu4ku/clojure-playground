@@ -2,7 +2,6 @@
   (:require [clojure.test :refer :all]))
 
 ; https://www.codewars.com/kata/550498447451fbbd7600041c
-; fails due to ambiguous instructions so fck it
 
 
 (defn is-multiple? [num]
