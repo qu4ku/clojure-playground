@@ -38,6 +38,7 @@
   (query (-> (select :*)
              (from :redirects)
              (sql/format)))
+  (get-url "test")
   (insert! (-> (insert-into :redirects)
                (columns :slug :url)
                (values
