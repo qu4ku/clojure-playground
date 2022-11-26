@@ -22,6 +22,10 @@
   {:status 200
    :body @users})
 
+(defn get-user-by-id [{{:keys [id]} :path-params}]
+  {:status 200
+   :body (get @users id)})
+
 (def app
   (ring/ring-handler
    (ring/router
